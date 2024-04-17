@@ -1,0 +1,160 @@
+{
+   "checksum": "8bce36b7f829f9d3b633818af846777a",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13192420865958221",
+            "date_last_used": "0",
+            "guid": "0af12c5f-06f9-4cc9-b794-b39dbdbb6b19",
+            "id": "13",
+            "name": "Booking.com",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "http://www.booking.com/index.html?aid=398438&label=webslice"
+         }, {
+            "date_added": "13173324828251152",
+            "date_last_used": "0",
+            "guid": "d7ea178c-5ca4-4da6-ad51-a67d5eddc243",
+            "id": "14",
+            "name": "Hotmail, Outlook, El Tiempo, noticias, videos, en MSN Colombia",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "http://www.msn.com/es-co/?cobrand=hp15-comm.msn.com&ocid=HPCOMMDHP15&pc=HRTE"
+         }, {
+            "date_added": "13192421759069823",
+            "date_last_used": "0",
+            "guid": "cc67c40e-b04f-4888-aaec-1969f79c9f8a",
+            "id": "15",
+            "name": "TripAdvisor",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "http://js.redirect.hp.com/jumpstation?bd=all&c=none&locale=all&pf=cnnb&s=tripadvisor_W10_iefavsbar&tp=iefavs"
+         }, {
+            "children": [ {
+               "date_added": "13275336827855784",
+               "date_last_used": "0",
+               "guid": "2e9f40b0-75e3-4e25-8285-7d907eac296c",
+               "id": "17",
+               "name": "Lenovo Support",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://support.lenovo.com/"
+            }, {
+               "date_added": "13275336827871416",
+               "date_last_used": "0",
+               "guid": "79eafee1-deed-4f1b-87ef-e7eee42a722d",
+               "id": "18",
+               "name": "Lenovo",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://www.lenovo.com/"
+            } ],
+            "date_added": "13309622774689978",
+            "date_last_used": "0",
+            "date_modified": "13309622774689978",
+            "guid": "fda19e64-fe10-4d4d-a917-92e030a37f38",
+            "id": "16",
+            "name": "Lenovo",
+            "source": "unknown",
+            "type": "folder"
+         } ],
+         "date_added": "13357847514547506",
+         "date_last_used": "0",
+         "date_modified": "13192421759069823",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Favorites bar",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "date_added": "13138938424308622",
+            "date_last_used": "0",
+            "guid": "57c852c0-d875-4e3c-aae8-40f7ec8ddbd4",
+            "id": "7",
+            "name": "Back Bay Apartment - Departamentos en alquiler en Boston, Massachusetts, Estados Unidos",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.airbnb.com.co/rooms/7007801?location=Boston%2C%20Massachusetts%2C%20Estados%20Unidos&check_in=2017-09-01&check_out=2017-12-17&s=V_jjjbKI"
+         }, {
+            "children": [ {
+               "date_added": "13192420865958221",
+               "date_last_used": "0",
+               "guid": "36a7adbd-d063-4652-95f8-02cd86459717",
+               "id": "9",
+               "name": "Booking.com",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://www.booking.com/index.html?aid=398438&label=iefav"
+            }, {
+               "date_added": "13133559070705518",
+               "date_last_used": "0",
+               "guid": "e6fbc7a6-f716-4e23-9f92-c27325e506e4",
+               "id": "10",
+               "name": "TripAdvisor",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://js.redirect.hp.com/jumpstation?bd=all&c=none&locale=all&pf=cnnb&s=TripAdvisor_W10_iefav&tp=iefavs"
+            }, {
+               "date_added": "13133559071221205",
+               "date_last_used": "0",
+               "guid": "5b23515e-e4d9-493b-8fb9-6937b1efaa77",
+               "id": "11",
+               "name": "WildTangent Games for HP",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://redirect.hp.com/svs/rdr?TYPE=4&tp=iefavs&s=myhpgames&pf=cnnb&locale=es_co&bd=all&c=163"
+            } ],
+            "date_added": "13266876986877064",
+            "date_last_used": "0",
+            "date_modified": "13266876986877064",
+            "guid": "a836a635-d621-45dc-96c4-210d6cb1ec4a",
+            "id": "8",
+            "name": "HP",
+            "source": "unknown",
+            "type": "folder"
+         }, {
+            "date_added": "13140378187490166",
+            "date_last_used": "0",
+            "guid": "ee558aad-8439-4e7f-b063-3a1543cbb663",
+            "id": "12",
+            "name": "Nueva pestaña",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.msn.com/spartan/ientp?locale=es-CO&market=CO&enableregulatorypsm=0&NTLogo=1&IsFRE=0"
+         } ],
+         "date_added": "13357847514547511",
+         "date_last_used": "0",
+         "date_modified": "13140378187490166",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13357847514547512",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile favorites",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CjEKDgiIgQISCK1OC+2OAQAAEgAqGFg5aGsxM0JxYm5ySUlTdVJ2MXd4MXc9PUgDoAYMEqgBCA8SowEKHDkyOHd2aEhQbU5OYi93VWRiakVybWJlbnp0WT0SJGNjNjdjNDBlLWIwNGYtNDg4OC1hYWVjLTE5NjlmNzljOWY4YRgAIAAoADC49JPb1C8407rK7vAvQNO6yu7wL0ocNkRpMFFiQnBvdmNiMkppZ2JOMGsxQmNnQmpjPVofIh3TTXRrVTZiNUdhZWNnRmlMZmtJVzFZNGo4d3A0PWUAAAAAEqgBCA4SowEKHFM2dFg0bEozSTB3VTB4OGc2ZWtGMUhwVXYxaz0SJGQ3ZWExNzhjLTVjYTQtNGRhNi1hZDUxLWE2N2Q1ZWRkYzI0MxgAIAAoADC49JPb1C8447rK7vAvQOO6yu7wL0occXRjUTFYQnlyeDFwVmEwTEV4bjBWMWNtMFVVPVofIh2nQUpLcDQvYWRFUEVnS2lLMVArbUczN0M4bW1vPWUAAAAAEqcBCA0SogEKHExoK1Q4ck91ZlVza2VNeXVNOVVUY2t4cGRiRT0SJDBhZjEyYzVmLTA2ZjktNGNjOS1iNzk0LWIzOWRiZGJiNmIxORgAIAAoADC49JPb1C84lrnK7vAvQJa5yu7wL0ocM0ZZc0UxeDNLNWQxdHJpSi9WR0dXZStFT0lZPVoeIhxOTlI0QzRyK0YrS3F4dllzb1RpOFdPakY2Q2c9ZQAAAAASpwEIERKiAQocR0pITHU1aDVDREQ0amdUOUYxczgxemVJaHg4PRIkMmU5ZjQwYjAtNzVlMy00ZTI1LTgyODUtN2Q5MDdlYWMyOTZjGAAgACgAMKuWgJW7MDjuloCVuzBA7paAlbswShwzeVFvL2dmb2srRmREWEpaZFdEMmxJY2tRakU9Wh4iHFkxWmkrOUt5Sk1KUG8rVWprQUltblZUVVNrST1lAAAAABKoAQgLEqMBChxlbmF4UHZtVzJjQXRNcWhCNTNTaGlYaitSc2s9EiQ1YjIzNTE1ZS1lNGQ5LTQ5M2ItOGZiOS02OTM3YjFlZmFhNzcYACAAKAAwuPST29QvOPW5yu7wL0D1ucru8C9KHDh5RHJzNVJnTUZWSVNwSmV4WGYrWFV1R0JUYz1aHyIdvFAyNG1QNW51SitSNDk3ZVJBdXBRRklNby9zYz1lAAAAABKJAQgDEoQBChxuamdEdTg4ZUNydlhwODZwRDdmSEdjcUZwODg9EiRkZWVmZWFiMC1lZDkzLTViODEtYWExMy1kODY0OWQzZjgyMzcYACAAKAAwpJCX5souOK+yyu7wL0Cvssru8C9KHHl6TkIwMWNuNTRBN2NSVTB1VCsvUGdtVHRVbz1aAGUAAAAAEqgBCAgSowEKHFFzbloyZ1QvNTJpRzA0bTU3MnNPSGVrZ1d6UT0SJGE4MzZhNjM1LWQ2MjEtNDVkYy05NmM0LTIxMGQ2Y2IxZWM0YRgAIAAoADC49JPb1C84hLrK7vAvQIS6yu7wL0ocS2Jja2JTOWN5MnBPclcvVXpWTUd4RDhIajAwPVofIh26ZVNUNmFaNzFhMnk1OVdCSjViVTJZN2lFR1RZPWUAAAAAEqcBCBISogEKHGVLSHFxTDZGUnlBemxENG84Tk9MWENZN05pUT0SJDc5ZWFmZWUxLWRlZWQtNGYxYi04N2VmLWU3ZWVlNDJhNzIyZBgAIAAoADCrloCVuzA4/paAlbswQP6WgJW7MEocUWRhSXJUYnhTQnc4OS81enF1WlBwNWRPZEd3PVoeIhx3MVQ0RWpOTGZGME9ibFJXN3NvZFNjalJEZ1E9ZQAAAAASpwEICRKiAQocc3ZSelEwTTRGV2pOOVhEK0ZTdUdKVU9uQTNZPRIkMzZhN2FkYmQtZDA2My00NjUyLTk1ZjgtMDJjZDg2NDU5NzE3GAAgACgAMLj0k9vULzjEucru8C9AxLnK7vAvShw0SWtEeFBheVJYOGFVODE2VVRBM3FkdXNzSEE9Wh4iHElYYUhjL1pNWG9oQ3JRVXRCVWxvbFQ5dUlCRT1lAAAAABKJAQgBEoQBChx5eEovNmZ2a2VjcjdrcDVFUXpCNHRXTHBkYkU9EiRlMTM5ZWFkOS1kN2QwLTUxNzUtOTIyMC0wODQ5NzhkOTZjNjgYACAAKAAwn5CX5souONOxyu7wL0DTscru8C9KHGFSQ1dMZ2hGOWI1SW5xS0lEdnVKL2p2UWtGYz1aAGUAAAAAEqcBCAoSogEKHEdwVnZnaEdLRkI4L0MzaEtpc2kxUDErUkh2dz0SJGU2ZmJjN2E2LWY3MTYtNGUyMy05ZjkyLWMyNzMyNWU1MDZlNBgAIAAoADC49JPb1C84grvK7vAvQIK7yu7wL0ocM0JEanVZZHo5ZlErYjRDV3FsTmdBQ1hlUVM0PVoeIhx4dXZCaVFFZmdaTlZxNkxVZ3FoWmljZDFMcXc9ZQAAAAASqAEIEBKjAQocZVpSRGNLVkJUUzRrNVpyUmlPWEUyUmg5eFNJPRIkZmRhMTllNjQtZmUxMC00ZDRkLWE5MTctOTJlMDMwYTM3ZjM4GAAgACgAMKuWgJW7MDjAloCVuzBAwJaAlbswShw3MXVoT2h6TTZhajVUQTNIWmlBUzdJTTk0UTg9Wh8iHelDTHZ6eCtxZUU4SjhDdnhEQXdvY3Vkc1ZyZlU9ZQAAAAASpwEIBxKiAQocUDRBK2tRRDk5MnVtSUlUZkxFSE5iRUNiVThRPRIkNTdjODUyYzAtZDg3NS00ZTNjLWFhZTgtNDBmN2VjOGRkYmQ0GAAgACgAMLj0k9vULzjVucru8C9A1bnK7vAvShwreGRLYUtkZG1Pc1QveVh1WjJiSzYvUkVyTXM9Wh4iHHVoUmRNZkV2bU1hQ1JIVkVMNDJDMEd1cmpndz1lAAAAABKoAQgMEqMBChw0TW1iSmJ4dGhvejk1STJFM2V2TktFZDRER1k9EiRlZTU1OGFhZC04NDM5LTRlN2YtYjA2My0zYTE1NDNjYmI2NjMYACAAKAAwuPST29QvOKK7yu7wL0Ciu8ru8C9KHHF3SWxWYy9TQXFUVklWVnV3cmdKTFBXUWJVbz1aHyId3VVLcVR0Q2Npa0cyN1ptZWM4bG5XeEJqUi9WND1lAAAAABKJAQgCEoQBChxZY1NUb252RVNQd3FDczRMMmNyVmh2NjhMOTg9EiQ5YWY5ZDJjNi01YjdjLTU0MWItYWE1MS1mZGVlMGRlYjdiY2YYACAAKAAwoJCX5souOIKyyu7wL0CCssru8C9KHG9QVmtod0JSYlY2NUtDV1IyK0lPTkhXb091OD1aAGUAAAAAMAA4AA==",
+   "version": 1
+}
