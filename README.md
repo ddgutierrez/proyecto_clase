@@ -1,1 +1,2 @@
 # proyecto_clase_movil
+Este repositorio contiene un proyecto de Flutter que implementa un panel de control de soporte. Permite a los usuarios crear y gestionar informes de trabajo, así como ver el estado y las calificaciones de los informes existentes. El panel de control está diseñado específicamente para el personal de soporte y proporciona una interfaz intuitiva para mejorar la eficiencia en la gestión de informes. El proyecto incluye características como la creación de informes, visualización de detalles de informes y cierre de sesión segura.
