@@ -18,73 +18,102 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final bool isWideScreen = size.width > 600;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
         backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 40),
-                TextFormField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
-                  ),
-                  obscureText: !_isPasswordVisible,
-                ),
-                SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: () => login(context),
-                  child: Text('Login'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.deepPurple,
-                    onPrimary: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  ),
-                ),
-                SizedBox(height: 20),
-                TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/signup'),
-                  child: Text('Sign Up for Support'),
-                  style: TextButton.styleFrom(
-                    primary: Colors.deepPurple,
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage("https://images.unsplash.com/photo-1584722065451-922e4d176e53?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                width: isWideScreen ? size.width / 2 : size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.network("https://th.bing.com/th/id/OIG2.xxZAQqi4EqnFzy4H1Uz7?pid=ImgGn", height: 120),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: !_isPasswordVisible,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          labelText: 'Password',
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      ElevatedButton(
+                        onPressed: () => login(context),
+                        child: Text('Login'),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      TextButton(
+                        onPressed: () => Navigator.pushNamed(context, '/signup'),
+                        child: Text('Sign Up for Support'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
