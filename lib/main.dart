@@ -13,10 +13,10 @@ class MyApp extends StatelessWidget {
       title: 'Proyecto de Clase',
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginScreen(),
-        '/signup': (context) => SignupScreen(),
+        '/': (context) => const LoginScreen(),
+        '/signup': (context) => const SignupScreen(),
         '/coordinator': (context) => CoordinatorDashboard(),
-        '/support': (context) => SupportDashboard(),
+        '/support': (context) => const SupportDashboard(),
       },
     );
   }
