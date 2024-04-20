@@ -20,3 +20,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    # AI generated https://www.bing.com/images/create/a-tech-support-logo2c-simple-style/1-6620827393ff4bbbbb3c019fb0ea1259?id=vH%2fwI5mjcMqFK6cnzQOiAg%3d%3d&view=detailv2&idpp=genimg&thId=OIG2.xxZAQqi4EqnFzy4H1Uz7&darkschemeovr=1&edgehub=1&FORM=GCRIDP
+    - assets/logo.png
+    # Taken from https://unsplash.com/photos/person-using-black-computer-keyboard-08dyHxddcKc
+    - assets/background.jpg

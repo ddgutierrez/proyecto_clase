@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage("https://images.unsplash.com/photo-1584722065451-922e4d176e53?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
+                image: AssetImage('assets/background.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Image.network("https://th.bing.com/th/id/OIG2.xxZAQqi4EqnFzy4H1Uz7?pid=ImgGn", height: 120),
+                      Image.asset("assets/logo.png", height: 120),
                       SizedBox(height: 20),
                       TextFormField(
                         controller: emailController,
@@ -82,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: 'Password',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                            icon: Icon(_isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off),
                             onPressed: () {
                               setState(() {
                                 _isPasswordVisible = !_isPasswordVisible;
@@ -99,12 +101,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
-                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 15),
                         ),
                       ),
                       SizedBox(height: 20),
                       TextButton(
-                        onPressed: () => Navigator.pushNamed(context, '/signup'),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/signup'),
                         child: Text('Sign Up for Support'),
                       ),
                     ],
@@ -119,12 +123,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login(BuildContext context) {
-    if (coordinatorController.validateCredentials(emailController.text, passwordController.text)) {
+    if (coordinatorController.validateCredentials(
+        emailController.text, passwordController.text)) {
       Navigator.pushNamed(context, '/coordinator');
-    } else if (supportController.validateCredentials(emailController.text, passwordController.text)) {
+    } else if (supportController.validateCredentials(
+        emailController.text, passwordController.text)) {
       Navigator.pushNamed(context, '/support');
     } else {
-      final snackBar = SnackBar(content: Text('Invalid credentials! Please try again.'));
+      final snackBar =
+          SnackBar(content: Text('Invalid credentials! Please try again.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
