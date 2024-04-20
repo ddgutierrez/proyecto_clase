@@ -61,8 +61,6 @@ This is a project for the mobile programming course, the goal is to create a flu
   </ul>
 </details>
 
-<details>
-
 <!-- Features -->
 ### :dart: Features
 
