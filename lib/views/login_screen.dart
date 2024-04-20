@@ -3,8 +3,9 @@ import '../controllers/coordinator_controller.dart';
 import '../controllers/support_controller.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -23,13 +24,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: const Text("Login"),
         backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
       ),
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/background.jpg'),
                 fit: BoxFit.cover,
@@ -49,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 5,
                       blurRadius: 7,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -59,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Image.asset("assets/logo.png", height: 120),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
@@ -67,11 +69,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           labelText: 'Email',
-                          prefixIcon: Icon(Icons.email),
+                          prefixIcon: const Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: passwordController,
                         obscureText: !_isPasswordVisible,
@@ -80,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           labelText: 'Password',
-                          prefixIcon: Icon(Icons.lock),
+                          prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(_isPasswordVisible
                                 ? Icons.visibility
@@ -93,19 +95,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       ElevatedButton(
                         onPressed: () => login(context),
-                        child: Text('Login'),
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 50, vertical: 15),
                         ),
+                        child: const Text('Login'),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       TextButton(
                         onPressed: () =>
                             Navigator.pushNamed(context, '/signup'),

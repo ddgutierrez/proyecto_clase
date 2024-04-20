@@ -3,8 +3,9 @@ import '../controllers/support_controller.dart';
 import '../models/user_support.dart';
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
   @override
-  _SignupScreenState createState() => _SignupScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends State<SignupScreen> {
@@ -17,7 +18,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Signup for Support")),
+      appBar: AppBar(title: const Text("Signup for Support")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -25,21 +26,21 @@ class _SignupScreenState extends State<SignupScreen> {
             children: <Widget>[
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
               ),
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
               ),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => createUser(),
-                child: Text('Signup'),
+                child: const Text('Signup'),
               ),
             ],
           ),
@@ -49,7 +50,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void createUser() {
-    if (nameController.text.isNotEmpty && emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+    if (nameController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty) {
       final newUser = UserSupport(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: nameController.text,
@@ -59,7 +62,7 @@ class _SignupScreenState extends State<SignupScreen> {
       supportController.addSupportUser(newUser);
       Navigator.pop(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Please fill all fields"),
         backgroundColor: Colors.red,
       ));
