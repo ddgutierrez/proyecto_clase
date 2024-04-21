@@ -20,7 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    bool isWideScreen = size.width > 600;
+    final bool isWideScreen = size.width > 600;
+    bool isWider = size.width > 800;
 
     return Scaffold(
       appBar: AppBar(
@@ -58,14 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Flex(
-                  direction: isWideScreen ? Axis.horizontal : Axis.vertical,
+                  direction: isWider ? Axis.horizontal : Axis.vertical,
                   children: <Widget>[
                     Expanded(
-                        flex: isWideScreen ? 1 : 0,
+                        flex: isWider ? 1 : 0,
                         child: Image.asset("assets/logo.png",
-                            height: isWideScreen ? null : 120)),
+                            height: isWider ? null : 120)),
                     Expanded(
-                        flex: isWideScreen ? 1 : 0,
+                        flex: isWider ? 1 : 0,
                         child: Column(children: [
                           const SizedBox(height: 20),
                           TextFormField(
