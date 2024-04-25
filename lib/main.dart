@@ -4,11 +4,13 @@ import 'views/signup_screen.dart';
 import 'views/coordinator_dashboard.dart';
 import 'views/support_dashboard.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
+    precacheImage(const AssetImage('assets/background.jpg'), context);
     return MaterialApp(
       title: 'Proyecto de Clase',
       debugShowCheckedModeBanner: false,
