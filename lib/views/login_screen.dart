@@ -70,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(children: [
                           const SizedBox(height: 20),
                           TextFormField(
+                            key: const Key('TextFormFieldLoginEmail'),
                             controller: emailController,
                             onFieldSubmitted: (string) => login(context),
                             decoration: InputDecoration(
@@ -83,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
+                            key: const Key('TextFormFieldLoginPassword'),
                             controller: passwordController,
                             obscureText: !_isPasswordVisible,
                             onFieldSubmitted: (string) => login(context),
@@ -106,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 40),
                           ElevatedButton(
+                            key: const Key('ButtonLoginSubmit'),
                             onPressed: () => login(context),
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
