@@ -136,17 +136,24 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void login(BuildContext context) {
-    if (coordinatorController.validateCredentials(
-        emailController.text, passwordController.text)) {
-      Navigator.pushNamed(context, '/coordinator');
-    } else if (supportController.validateCredentials(
-        emailController.text, passwordController.text)) {
-      Navigator.pushNamed(context, '/support');
-    } else {
-      final snackBar =
-          SnackBar(content: Text('Invalid credentials! Please try again.'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+  void login(BuildContext context) async {
+  bool coordinatorAuthenticated = await coordinatorController.validateCredentials(
+    emailController.text, 
+    passwordController.text
+  );
+
+  bool supportAuthenticated = await supportController.validateCredentials(
+    emailController.text, 
+    passwordController.text
+  );
+
+  if (coordinatorAuthenticated) {
+    Navigator.pushNamed(context, '/coordinator');
+  } else if (supportAuthenticated) {
+    Navigator.pushNamed(context, '/support');
+  } else {
+    final snackBar = SnackBar(content: Text('Invalid credentials! Please try again.'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
   }
 }

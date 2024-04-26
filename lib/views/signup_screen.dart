@@ -49,23 +49,30 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void createUser() {
-    if (nameController.text.isNotEmpty &&
-        emailController.text.isNotEmpty &&
-        passwordController.text.isNotEmpty) {
-      final newUser = UserSupport(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: nameController.text,
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      supportController.addSupportUser(newUser);
+  void createUser() async {
+  if (nameController.text.isNotEmpty &&
+      emailController.text.isNotEmpty &&
+      passwordController.text.isNotEmpty) {
+    final newUser = UserSupport(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: nameController.text,
+      email: emailController.text,
+      password: passwordController.text,
+    );
+    try {
+      await supportController.addSupportUser(newUser);
       Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Please fill all fields"),
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text("Please fill all fields"),
+      backgroundColor: Colors.red,
+    ));
   }
+}
 }

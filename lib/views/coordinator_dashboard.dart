@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import '../services/api_service_coordinator.dart';
+import '../services/api_service.dart';  // Ensure this import path is correct
+import '../models/user_support.dart';  // Ensure this import path is correct
 
 class CoordinatorDashboard extends StatefulWidget {
   const CoordinatorDashboard({super.key});
@@ -77,103 +80,298 @@ class _DashboardState extends State<CoordinatorDashboard> {
   }
 }
 
-class UserSupportManagement extends StatelessWidget {
-  const UserSupportManagement({super.key});
+class UserSupportManagement extends StatefulWidget {
+  const UserSupportManagement({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return ListView(children: [
-      ExpansionTile(
-        title: const Text('Añadir Usuario'),
-        childrenPadding: const EdgeInsets.all(8),
-        children: [
-          TextFormField(decoration: const InputDecoration(labelText: 'ID')),
-          TextFormField(decoration: const InputDecoration(labelText: 'Nombre')),
-          TextFormField(decoration: const InputDecoration(labelText: 'Email')),
-          TextFormField(
-              decoration: const InputDecoration(labelText: 'Contraseña')),
-          const SizedBox(
-            height: 10,
-          ),
-          ElevatedButton(onPressed: () {}, child: const Text('Guardar Usuario'))
-        ],
-      ),
-      ExpansionTile(
-          title: const Text('Editar Usuario'),
-          childrenPadding: const EdgeInsets.all(8),
-          children: [
-            TextFormField(decoration: const InputDecoration(labelText: 'ID')),
-            TextFormField(
-                decoration: const InputDecoration(labelText: 'Nombre')),
-            TextFormField(
-                decoration: const InputDecoration(labelText: 'Email')),
-            TextFormField(
-                decoration: const InputDecoration(labelText: 'Contraseña')),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {}, child: const Text('Guardar Cambios'))
-          ]),
-      ExpansionTile(
-          title: const Text('Eliminar Usuario'),
-          childrenPadding: const EdgeInsets.all(8),
-          children: [
-            TextFormField(decoration: const InputDecoration(labelText: 'ID')),
-            TextFormField(
-                decoration: const InputDecoration(labelText: 'Nombre')),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {}, child: const Text('Eliminar Usuario'))
-          ])
-    ]);
-  }
+  _UserSupportManagementState createState() => _UserSupportManagementState();
 }
 
-class ClientManagement extends StatelessWidget {
+class _UserSupportManagementState extends State<UserSupportManagement> {
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  ApiService apiService = ApiService();
+  List<UserSupport> users = []; // List to hold users
+  UserSupport? selectedUser; // Currently selected user for editing or deletion
+
+  // Controllers for adding users
+  final TextEditingController addNameController = TextEditingController();
+  final TextEditingController addEmailController = TextEditingController();
+  final TextEditingController addPasswordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadUsers(); // Load users when the widget is initialized
+  }
+
+  Future<void> loadUsers() async {
+    users = await apiService.fetchSupportUsers(); // Replace with your method to fetch users
+    if (users.isNotEmpty) {
+      selectedUser = users.first;
+      updateFields(); // Update fields based on the selected user
+    }
+    setState(() {});
+  }
+
+  void updateFields() {
+    if (selectedUser != null) {
+      idController.text = selectedUser!.id;
+      nameController.text = selectedUser!.name;
+      emailController.text = selectedUser!.email;
+      passwordController.text = selectedUser!.password;
+    }
+  }
+
+  void addSupportUser() async {
+    if (addEmailController.text.isNotEmpty && addNameController.text.isNotEmpty && addPasswordController.text.isNotEmpty) {
+      try {
+        // First, check if the email already exists
+        bool exists = await apiService.emailExists(addEmailController.text);
+        if (exists) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email already exists')));
+          return; // Stop the function if the email exists
+        }
+
+        // Proceed to add the user if the email does not exist
+        UserSupport newUser = UserSupport(
+          id: DateTime.now().millisecondsSinceEpoch.toString(), // Or you can now omit the ID if handled by the API
+          name: addNameController.text,
+          email: addEmailController.text,
+          password: addPasswordController.text,
+        );
+        await apiService.addSupportUser(newUser);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User added successfully')));
+        clearAddFields();
+        loadUsers(); // Reload the list of users
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add user: $e')));
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+    }
+  }
+
+  void updateSupportUser() async {
+    if (idController.text.isNotEmpty && emailController.text.isNotEmpty && nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      try {
+        await apiService.updateSupportUser(idController.text, {
+          'name': nameController.text,
+          'email': emailController.text,
+          'password': passwordController.text,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User updated successfully')));
+        clearFields();
+        loadUsers(); // Reload the list of users
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update user: $e')));
+      }
+    }
+  }
+
+  void deleteSupportUser() async {
+    if (idController.text.isNotEmpty) {
+      try {
+        await apiService.deleteSupportUser(idController.text);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User deleted successfully')));
+        clearFields();
+        loadUsers(); // Reload the list of users
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete user: $e')));
+      }
+    }
+  }
+
+  void clearFields() {
+    idController.clear();
+    nameController.clear();
+    emailController.clear();
+    passwordController.clear();
+  }
+
+  void clearAddFields() {
+    addNameController.clear();
+    addEmailController.clear();
+    addPasswordController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(8.0),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(
+            'Select a user to edit or delete:',
+            style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(color: Colors.grey.shade300),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<UserSupport>(
+              value: selectedUser,
+              isExpanded: true,
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.deepPurple),
+              iconSize: 24,
+              style: TextStyle(color: Colors.deepPurple[800], fontSize: 16),
+              onChanged: (UserSupport? newValue) {
+                setState(() {
+                  selectedUser = newValue;
+                  updateFields();
+                });
+              },
+              items: users.map((UserSupport user) {
+                return DropdownMenuItem<UserSupport>(
+                  value: user,
+                  child: Text(user.name, style: const TextStyle(color: Colors.black87)),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        ExpansionTile(
+          title: const Text('Add User', style: TextStyle(color: Colors.deepPurple)),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [
+            TextFormField(controller: addNameController, decoration: const InputDecoration(labelText: 'Name')),
+            TextFormField(controller: addEmailController, decoration: const InputDecoration(labelText: 'Email')),
+            TextFormField(controller: addPasswordController, decoration: const InputDecoration(labelText: 'Password')),
+            ElevatedButton(onPressed: addSupportUser, child: const Text('Save User')),
+        ],
+      ),
+      ExpansionTile(
+        title: const Text('Edit User', style: TextStyle(color: Colors.deepPurple)),
+        childrenPadding: const EdgeInsets.all(8),
+        children: [
+          TextFormField(controller: idController, decoration: const InputDecoration(labelText: 'ID')),
+          TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
+          TextFormField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
+          TextFormField(controller: passwordController, decoration: const InputDecoration(labelText: 'Password')),
+          ElevatedButton(onPressed: updateSupportUser, child: const Text('Save Changes')),
+        ],
+      ),
+      ExpansionTile(
+        title: const Text('Delete User', style: TextStyle(color: Colors.deepPurple)),
+        childrenPadding: const EdgeInsets.all(8),
+        children: [
+          ElevatedButton(onPressed: deleteSupportUser, child: const Text('Delete User')),
+        ],
+      ),
+    ],
+  );
+}
+}
+
+class ClientManagement extends StatefulWidget {
   const ClientManagement({super.key});
+
+  @override
+  _ClientManagementState createState() => _ClientManagementState();
+}
+
+class _ClientManagementState extends State<ClientManagement> {
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  ApiServiceCoordinator apiService = ApiServiceCoordinator();
+
+  void addClient() async {
+    if (nameController.text.isNotEmpty) {
+      try {
+        await apiService.addClient({'name': nameController.text});
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client added successfully')));
+        nameController.clear();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add client: $e')));
+      }
+    }
+  }
+
+  void updateClient() async {
+    if (idController.text.isNotEmpty && nameController.text.isNotEmpty) {
+      try {
+        await apiService.updateClient(idController.text, {'name': nameController.text});
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client updated successfully')));
+        idController.clear();
+        nameController.clear();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update client: $e')));
+      }
+    }
+  }
+
+  void deleteClient() async {
+    if (idController.text.isNotEmpty) {
+      try {
+        await apiService.deleteClient(idController.text);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client deleted successfully')));
+        idController.clear();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete client: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(children: [
       ExpansionTile(
-        title: const Text('Añadir Cliente'),
+        title: const Text('Add Client'),
         childrenPadding: const EdgeInsets.all(8),
         children: [
-          TextFormField(decoration: const InputDecoration(labelText: 'ID')),
-          TextFormField(decoration: const InputDecoration(labelText: 'Nombre')),
-          const SizedBox(
-            height: 10,
+          TextFormField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
           ),
-          ElevatedButton(onPressed: () {}, child: const Text('Guardar Cliente'))
+          const SizedBox(height: 10),
+          ElevatedButton(onPressed: addClient, child: const Text('Save Client')),
         ],
       ),
       ExpansionTile(
-          title: const Text('Editar Cliente'),
-          childrenPadding: const EdgeInsets.all(8),
-          children: [
-            TextFormField(decoration: const InputDecoration(labelText: 'ID')),
-            TextFormField(
-                decoration: const InputDecoration(labelText: 'Nombre')),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {}, child: const Text('Guardar Cambios'))
-          ]),
+        title: const Text('Edit Client'),
+        childrenPadding: const EdgeInsets.all(8),
+        children: [
+          TextFormField(
+            controller: idController,
+            decoration: const InputDecoration(labelText: 'ID'),
+          ),
+          TextFormField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(onPressed: updateClient, child: const Text('Save Changes')),
+        ],
+      ),
       ExpansionTile(
-          title: const Text('Eliminar Cliente'),
-          childrenPadding: const EdgeInsets.all(8),
-          children: [
-            TextFormField(decoration: const InputDecoration(labelText: 'ID')),
-            TextFormField(
-                decoration: const InputDecoration(labelText: 'Nombre')),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {}, child: const Text('Eliminar Cliente'))
-          ])
+        title: const Text('Delete Client'),
+        childrenPadding: const EdgeInsets.all(8),
+        children: [
+          TextFormField(
+            controller: idController,
+            decoration: const InputDecoration(labelText: 'ID'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(onPressed: deleteClient, child: const Text('Delete Client')),
+        ],
+      ),
     ]);
   }
 }
