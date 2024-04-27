@@ -32,7 +32,8 @@ class ApiService {
     }
   }
 
-  Future<void> updateSupportUser(String id, Map<String, dynamic> userData) async {
+  Future<void> updateSupportUser(
+      String id, Map<String, dynamic> userData) async {
     final response = await http.put(
       Uri.parse('$_baseUrl/$id'),
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -51,14 +52,16 @@ class ApiService {
       throw Exception('Failed to delete user');
     }
   }
+
   Future<bool> emailExists(String email) async {
     final response = await http.get(Uri.parse(_baseUrl));
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
-      List<UserSupport> users = data.map((item) => UserSupport.fromJson(item)).toList();
+      List<UserSupport> users =
+          data.map((item) => UserSupport.fromJson(item)).toList();
       return users.any((user) => user.email == email);
     } else {
       throw Exception('Failed to check email existence');
     }
-    }
+  }
 }

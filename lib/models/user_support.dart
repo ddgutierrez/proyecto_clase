@@ -4,7 +4,11 @@ class UserSupport {
   final String email;
   final String password;
 
-  UserSupport({required this.id, required this.name, required this.email, required this.password});
+  UserSupport(
+      {required this.id,
+      required this.name,
+      required this.email,
+      required this.password});
 
   factory UserSupport.fromJson(Map<String, dynamic> json) {
     return UserSupport(

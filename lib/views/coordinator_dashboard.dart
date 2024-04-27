@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import '../services/api_service_coordinator.dart';
-import '../services/api_service.dart';  // Ensure this import path is correct
-import '../models/user_support.dart';  // Ensure this import path is correct
+import '../models/user_support.dart';  
+import '../controllers/support_controller.dart';
+import '../controllers/client_controller.dart';
+// Ensure this import path is correct
 
 class CoordinatorDashboard extends StatefulWidget {
   const CoordinatorDashboard({super.key});
@@ -92,7 +93,9 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  ApiService apiService = ApiService();
+
+  final SupportController supportController = SupportController();
+
   List<UserSupport> users = []; // List to hold users
   UserSupport? selectedUser; // Currently selected user for editing or deletion
 
@@ -108,7 +111,7 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   }
 
   Future<void> loadUsers() async {
-    users = await apiService.fetchSupportUsers(); // Replace with your method to fetch users
+    users = await supportController.apiService.fetchSupportUsers();
     if (users.isNotEmpty) {
       selectedUser = users.first;
       updateFields(); // Update fields based on the selected user
@@ -128,24 +131,16 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   void addSupportUser() async {
     if (addEmailController.text.isNotEmpty && addNameController.text.isNotEmpty && addPasswordController.text.isNotEmpty) {
       try {
-        // First, check if the email already exists
-        bool exists = await apiService.emailExists(addEmailController.text);
-        if (exists) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email already exists')));
-          return; // Stop the function if the email exists
-        }
-
-        // Proceed to add the user if the email does not exist
         UserSupport newUser = UserSupport(
-          id: DateTime.now().millisecondsSinceEpoch.toString(), // Or you can now omit the ID if handled by the API
+          id: '',
           name: addNameController.text,
           email: addEmailController.text,
           password: addPasswordController.text,
         );
-        await apiService.addSupportUser(newUser);
+        await supportController.addSupportUser(newUser);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User added successfully')));
         clearAddFields();
-        loadUsers(); // Reload the list of users
+        loadUsers(); 
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add user: $e')));
       }
@@ -156,12 +151,13 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
 
   void updateSupportUser() async {
     if (idController.text.isNotEmpty && emailController.text.isNotEmpty && nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      Map<String, dynamic> userData = {
+        'name': nameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+      };
       try {
-        await apiService.updateSupportUser(idController.text, {
-          'name': nameController.text,
-          'email': emailController.text,
-          'password': passwordController.text,
-        });
+        await supportController.updateSupportUser(idController.text, userData);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User updated successfully')));
         clearFields();
         loadUsers(); // Reload the list of users
@@ -174,7 +170,7 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   void deleteSupportUser() async {
     if (idController.text.isNotEmpty) {
       try {
-        await apiService.deleteSupportUser(idController.text);
+        await supportController.deleteSupportUser(idController.text);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User deleted successfully')));
         clearFields();
         loadUsers(); // Reload the list of users
@@ -190,13 +186,11 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
     emailController.clear();
     passwordController.clear();
   }
-
   void clearAddFields() {
     addNameController.clear();
     addEmailController.clear();
     addPasswordController.clear();
   }
-
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -290,12 +284,12 @@ class ClientManagement extends StatefulWidget {
 class _ClientManagementState extends State<ClientManagement> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  ApiServiceCoordinator apiService = ApiServiceCoordinator();
+  final ClientController clientController = ClientController();
 
   void addClient() async {
     if (nameController.text.isNotEmpty) {
       try {
-        await apiService.addClient({'name': nameController.text});
+        await clientController.addClient(nameController.text);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client added successfully')));
         nameController.clear();
       } catch (e) {
@@ -307,7 +301,7 @@ class _ClientManagementState extends State<ClientManagement> {
   void updateClient() async {
     if (idController.text.isNotEmpty && nameController.text.isNotEmpty) {
       try {
-        await apiService.updateClient(idController.text, {'name': nameController.text});
+        await clientController.updateClient(idController.text, nameController.text);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client updated successfully')));
         idController.clear();
         nameController.clear();
@@ -320,7 +314,7 @@ class _ClientManagementState extends State<ClientManagement> {
   void deleteClient() async {
     if (idController.text.isNotEmpty) {
       try {
-        await apiService.deleteClient(idController.text);
+        await clientController.deleteClient(idController.text);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client deleted successfully')));
         idController.clear();
       } catch (e) {

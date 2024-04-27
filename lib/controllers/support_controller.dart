@@ -19,10 +19,28 @@ class SupportController {
   Future<bool> validateCredentials(String email, String password) async {
     try {
       List<UserSupport> users = await apiService.fetchSupportUsers();
-      return users.any((user) => user.email == email && user.password == password);
+      return users
+          .any((user) => user.email == email && user.password == password);
     } catch (e) {
       print("Error validating credentials: $e");
-      return false; // Assume failure on error
+      return false;
+    }
+  }
+
+  Future<void> updateSupportUser(
+      String id, Map<String, dynamic> userData) async {
+    try {
+      await apiService.updateSupportUser(id, userData);
+    } catch (e) {
+      throw Exception('Failed to update user: $e');
+    }
+  }
+
+  Future<void> deleteSupportUser(String id) async {
+    try {
+      await apiService.deleteSupportUser(id);
+    } catch (e) {
+      throw Exception('Failed to delete user: $e');
     }
   }
 }
