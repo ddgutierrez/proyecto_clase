@@ -24,6 +24,7 @@ class _SupportDashboardState extends State<SupportDashboard> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
+            key: const Key('ButtonLogOut'),
             icon: Icon(Icons.exit_to_app),
             tooltip: 'Logout',
             onPressed: () {

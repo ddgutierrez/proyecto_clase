@@ -121,9 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 20),
                           TextButton(
+                            key: const Key('ButtonLoginRegister'),
                             onPressed: () =>
                                 Navigator.pushNamed(context, '/signup'),
-                            child: Text('Sign Up for Support'),
+                            child: const Text('Sign Up for Support'),
                           )
                         ])),
                   ],
@@ -137,23 +138,20 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login(BuildContext context) async {
-  bool coordinatorAuthenticated = await coordinatorController.validateCredentials(
-    emailController.text, 
-    passwordController.text
-  );
+    bool coordinatorAuthenticated = await coordinatorController
+        .validateCredentials(emailController.text, passwordController.text);
 
-  bool supportAuthenticated = await supportController.validateCredentials(
-    emailController.text, 
-    passwordController.text
-  );
+    bool supportAuthenticated = await supportController.validateCredentials(
+        emailController.text, passwordController.text);
 
-  if (coordinatorAuthenticated) {
-    Navigator.pushNamed(context, '/coordinator');
-  } else if (supportAuthenticated) {
-    Navigator.pushNamed(context, '/support');
-  } else {
-    final snackBar = SnackBar(content: Text('Invalid credentials! Please try again.'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
+    if (coordinatorAuthenticated) {
+      Navigator.pushNamed(context, '/coordinator');
+    } else if (supportAuthenticated) {
+      Navigator.pushNamed(context, '/support');
+    } else {
+      final snackBar =
+          SnackBar(content: Text('Invalid credentials! Please try again.'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 }

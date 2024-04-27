@@ -16,10 +16,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
-        '/coordinator': (context) => const CoordinatorDashboard(),
-        '/support': (context) => const SupportDashboard(),
+        '/': (context) => const LoginScreen(
+              key: Key('LoginScreen'),
+            ),
+        '/signup': (context) => const SignupScreen(key: Key('SignupScreen')),
+        '/coordinator': (context) =>
+            const CoordinatorDashboard(key: Key('CDashboard')),
+        '/support': (context) => const SupportDashboard(key: Key('SDashboard')),
       },
     );
   }
