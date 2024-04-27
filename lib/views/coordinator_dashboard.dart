@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import '../models/user_support.dart';  
+import '../models/user_support.dart';
 import '../controllers/support_controller.dart';
 import '../controllers/client_controller.dart';
 // Ensure this import path is correct
@@ -44,6 +44,7 @@ class _DashboardState extends State<CoordinatorDashboard> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
+            key: const Key('ButtonLogOut'),
             icon: const Icon(Icons.exit_to_app),
             tooltip: 'Logout',
             onPressed: () {
@@ -129,7 +130,9 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   }
 
   void addSupportUser() async {
-    if (addEmailController.text.isNotEmpty && addNameController.text.isNotEmpty && addPasswordController.text.isNotEmpty) {
+    if (addEmailController.text.isNotEmpty &&
+        addNameController.text.isNotEmpty &&
+        addPasswordController.text.isNotEmpty) {
       try {
         UserSupport newUser = UserSupport(
           id: '',
@@ -138,19 +141,25 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
           password: addPasswordController.text,
         );
         await supportController.addSupportUser(newUser);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User added successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User added successfully')));
         clearAddFields();
-        loadUsers(); 
+        loadUsers();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add user: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to add user: $e')));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all fields')));
     }
   }
 
   void updateSupportUser() async {
-    if (idController.text.isNotEmpty && emailController.text.isNotEmpty && nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+    if (idController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        nameController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty) {
       Map<String, dynamic> userData = {
         'name': nameController.text,
         'email': emailController.text,
@@ -158,11 +167,13 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
       };
       try {
         await supportController.updateSupportUser(idController.text, userData);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User updated successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User updated successfully')));
         clearFields();
         loadUsers(); // Reload the list of users
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update user: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to update user: $e')));
       }
     }
   }
@@ -171,11 +182,13 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
     if (idController.text.isNotEmpty) {
       try {
         await supportController.deleteSupportUser(idController.text);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User deleted successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User deleted successfully')));
         clearFields();
         loadUsers(); // Reload the list of users
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete user: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to delete user: $e')));
       }
     }
   }
@@ -186,11 +199,13 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
     emailController.clear();
     passwordController.clear();
   }
+
   void clearAddFields() {
     addNameController.clear();
     addEmailController.clear();
     addPasswordController.clear();
   }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -200,7 +215,10 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Text(
             'Select a user to edit or delete:',
-            style: Theme.of(context).textTheme.headline6?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context)
+                .textTheme
+                .headline6
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         Container(
@@ -234,7 +252,8 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
               items: users.map((UserSupport user) {
                 return DropdownMenuItem<UserSupport>(
                   value: user,
-                  child: Text(user.name, style: const TextStyle(color: Colors.black87)),
+                  child: Text(user.name,
+                      style: const TextStyle(color: Colors.black87)),
                 );
               }).toList(),
             ),
@@ -242,36 +261,57 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
         ),
         const SizedBox(height: 24),
         ExpansionTile(
-          title: const Text('Add User', style: TextStyle(color: Colors.deepPurple)),
+          title: const Text('Add User',
+              style: TextStyle(color: Colors.deepPurple)),
           childrenPadding: const EdgeInsets.all(8),
           children: [
-            TextFormField(controller: addNameController, decoration: const InputDecoration(labelText: 'Name')),
-            TextFormField(controller: addEmailController, decoration: const InputDecoration(labelText: 'Email')),
-            TextFormField(controller: addPasswordController, decoration: const InputDecoration(labelText: 'Password')),
-            ElevatedButton(onPressed: addSupportUser, child: const Text('Save User')),
-        ],
-      ),
-      ExpansionTile(
-        title: const Text('Edit User', style: TextStyle(color: Colors.deepPurple)),
-        childrenPadding: const EdgeInsets.all(8),
-        children: [
-          TextFormField(controller: idController, decoration: const InputDecoration(labelText: 'ID')),
-          TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
-          TextFormField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
-          TextFormField(controller: passwordController, decoration: const InputDecoration(labelText: 'Password')),
-          ElevatedButton(onPressed: updateSupportUser, child: const Text('Save Changes')),
-        ],
-      ),
-      ExpansionTile(
-        title: const Text('Delete User', style: TextStyle(color: Colors.deepPurple)),
-        childrenPadding: const EdgeInsets.all(8),
-        children: [
-          ElevatedButton(onPressed: deleteSupportUser, child: const Text('Delete User')),
-        ],
-      ),
-    ],
-  );
-}
+            TextFormField(
+                controller: addNameController,
+                decoration: const InputDecoration(labelText: 'Name')),
+            TextFormField(
+                controller: addEmailController,
+                decoration: const InputDecoration(labelText: 'Email')),
+            TextFormField(
+                controller: addPasswordController,
+                decoration: const InputDecoration(labelText: 'Password')),
+            ElevatedButton(
+                onPressed: addSupportUser, child: const Text('Save User')),
+          ],
+        ),
+        ExpansionTile(
+          title: const Text('Edit User',
+              style: TextStyle(color: Colors.deepPurple)),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [
+            TextFormField(
+                controller: idController,
+                decoration: const InputDecoration(labelText: 'ID')),
+            TextFormField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Name')),
+            TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email')),
+            TextFormField(
+                controller: passwordController,
+                decoration: const InputDecoration(labelText: 'Password')),
+            ElevatedButton(
+                onPressed: updateSupportUser,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        ExpansionTile(
+          title: const Text('Delete User',
+              style: TextStyle(color: Colors.deepPurple)),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [
+            ElevatedButton(
+                onPressed: deleteSupportUser, child: const Text('Delete User')),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class ClientManagement extends StatefulWidget {
@@ -290,10 +330,12 @@ class _ClientManagementState extends State<ClientManagement> {
     if (nameController.text.isNotEmpty) {
       try {
         await clientController.addClient(nameController.text);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client added successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Client added successfully')));
         nameController.clear();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add client: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to add client: $e')));
       }
     }
   }
@@ -301,12 +343,15 @@ class _ClientManagementState extends State<ClientManagement> {
   void updateClient() async {
     if (idController.text.isNotEmpty && nameController.text.isNotEmpty) {
       try {
-        await clientController.updateClient(idController.text, nameController.text);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client updated successfully')));
+        await clientController.updateClient(
+            idController.text, nameController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Client updated successfully')));
         idController.clear();
         nameController.clear();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update client: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update client: $e')));
       }
     }
   }
@@ -315,10 +360,12 @@ class _ClientManagementState extends State<ClientManagement> {
     if (idController.text.isNotEmpty) {
       try {
         await clientController.deleteClient(idController.text);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client deleted successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Client deleted successfully')));
         idController.clear();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete client: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete client: $e')));
       }
     }
   }
@@ -335,7 +382,8 @@ class _ClientManagementState extends State<ClientManagement> {
             decoration: const InputDecoration(labelText: 'Name'),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(onPressed: addClient, child: const Text('Save Client')),
+          ElevatedButton(
+              onPressed: addClient, child: const Text('Save Client')),
         ],
       ),
       ExpansionTile(
@@ -351,7 +399,8 @@ class _ClientManagementState extends State<ClientManagement> {
             decoration: const InputDecoration(labelText: 'Name'),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(onPressed: updateClient, child: const Text('Save Changes')),
+          ElevatedButton(
+              onPressed: updateClient, child: const Text('Save Changes')),
         ],
       ),
       ExpansionTile(
@@ -363,7 +412,8 @@ class _ClientManagementState extends State<ClientManagement> {
             decoration: const InputDecoration(labelText: 'ID'),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(onPressed: deleteClient, child: const Text('Delete Client')),
+          ElevatedButton(
+              onPressed: deleteClient, child: const Text('Delete Client')),
         ],
       ),
     ]);
