@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import '../models/report.dart';
 
 class ApiServiceReports {
-  final String baseUrl = 'https://retoolapi.dev/o5TFyJ/data';
+  final String baseUrl = 'https://retoolapi.dev/aCpDCs/data';
 
   // Function to create a new report
-  Future<void> createReport(Report report) async {
+  Future<bool> createReport(Report report) async {
     try {
       var response = await http.post(
         Uri.parse(baseUrl),
@@ -16,13 +16,10 @@ class ApiServiceReports {
         body: jsonEncode(report.toJson()),
       );
 
-      if (response.statusCode == 201) {
-        print('Report created successfully');
-      } else {
-        print('Failed to create report: ${response.body}');
-      }
+      return response.statusCode == 201;
     } catch (e) {
       print('Error occurred: $e');
+      return false;
     }
   }
 
@@ -64,6 +61,25 @@ class ApiServiceReports {
     } catch (e) {
       print('Error occurred: $e');
       return []; // Return empty list on error
+    }
+  }
+
+  Future<List<Report>> fetchReportsBySupportUser(int supportUserId) async {
+    try {
+      final response = await http.get(Uri.parse(baseUrl));
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body) as List;
+        List<Report> allReports =
+            data.map((item) => Report.fromJson(item)).toList();
+        List<Report> filteredReports = allReports
+            .where((report) => report.supportUser == supportUserId)
+            .toList();
+        return filteredReports;
+      } else {
+        return []; 
+      }
+    } catch (e) {
+      return []; 
     }
   }
 }

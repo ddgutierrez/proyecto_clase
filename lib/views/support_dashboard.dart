@@ -1,119 +1,135 @@
 import 'package:flutter/material.dart';
+import '../models/report.dart';
+import '../services/api_service_reports.dart';
 
 class SupportDashboard extends StatefulWidget {
-  const SupportDashboard({super.key});
+  final String id;
+  const SupportDashboard({super.key, required this.id});
+
   @override
   State<SupportDashboard> createState() => _SupportDashboardState();
 }
 
 class _SupportDashboardState extends State<SupportDashboard> {
-  List<Report> reports = [
-    Report(
-        'Report Example Client A', 'Client A', '12:00 PM', '1 hour', true, 4),
-    Report('Report Example Client B', 'Client B', '10:00 AM', '2 hours', false,
-        null),
-    Report('Report Example Client C', 'Client C', '3:00 PM', '45 minutes', true,
-        3),
-  ];
+  final ApiServiceReports apiService = ApiServiceReports();
+  List<Report> reports = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchReports();
+  }
+
+  void fetchReports() async {
+    try {
+      List<Report> fetchedReports =
+          await apiService.fetchReportsBySupportUser(int.parse(widget.id));
+      setState(() {
+        reports = fetchedReports;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching reports: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dashboard Soporte"),
+        title: Text("Support Dashboard - User ID: ${widget.id}"),
         automaticallyImplyLeading: false,
-        actions: <Widget>[
+        actions: [
           IconButton(
             key: const Key('ButtonLogOut'),
             icon: Icon(Icons.exit_to_app),
             tooltip: 'Logout',
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/', (Route<dynamic> route) => false);
-            },
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                context, '/', (route) => false),
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: reports.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(reports[index].problemDescription),
-            subtitle: Text(
-                'Client: ${reports[index].clientName}, Start Time: ${reports[index].startTime}, Duration: ${reports[index].duration}'),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                    reports[index].submitted
-                        ? Icons.check_circle_outline
-                        : Icons.error_outline,
-                    color:
-                        reports[index].submitted ? Colors.green : Colors.red),
-                reports[index].grade != null
-                    ? Text('Grade: ${reports[index].grade}')
-                    : SizedBox.shrink(),
-              ],
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: reports.length,
+              itemBuilder: (context, index) {
+                final report = reports[index];
+                return ListTile(
+                  title: Text(report.report),
+                  subtitle: Text(
+                      'Start Time: ${report.startTime}, Duration: ${report.duration} hours, Revised: ${report.revised}, Review: ${report.review}, Start Time: ${report.startTime}, Client: ${report.clientName}'),
+                );
+              },
             ),
-          );
-        },
-      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Create New Report'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      TextField(
-                        decoration:
-                            InputDecoration(labelText: 'Problem Description'),
-                      ),
-                      TextField(
-                        decoration: InputDecoration(labelText: 'Client Name'),
-                      ),
-                      TextField(
-                        decoration:
-                            InputDecoration(labelText: 'Start Time (HH:MM)'),
-                      ),
-                      TextField(
-                        decoration:
-                            InputDecoration(labelText: 'Duration (in hours)'),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Submit'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        tooltip: 'Create New Report',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
+        onPressed: () => showAddReportDialog(context),
       ),
     );
   }
-}
 
-class Report {
-  final String problemDescription;
-  final String clientName;
-  final String startTime;
-  final String duration;
-  final bool submitted;
-  final int? grade;
-
-  Report(this.problemDescription, this.clientName, this.startTime,
-      this.duration, this.submitted, this.grade);
+  void showAddReportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        String reportDesc = '';
+        String clientName = '';
+        String startTime = '';
+        String duration = '';
+        return AlertDialog(
+          title: Text('Create New Report'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) => reportDesc = value,
+                decoration: InputDecoration(labelText: 'Problem Description'),
+              ),
+              TextField(
+                onChanged: (value) => clientName = value,
+                decoration: InputDecoration(labelText: 'Client Name'),
+              ),
+              TextField(
+                onChanged: (value) => startTime = value,
+                decoration: InputDecoration(labelText: 'Start Time (HH:MM)'),
+              ),
+              TextField(
+                onChanged: (value) => duration = value,
+                decoration: InputDecoration(labelText: 'Duration (in hours)'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Report newReport = Report(
+                  report: reportDesc,
+                  review: 0,
+                  revised: false,
+                  duration: int.parse(duration),
+                  startTime: startTime,
+                  supportUser: int.parse(widget.id),
+                  clientName: clientName,
+                );
+                bool isCreated = await apiService.createReport(newReport);
+                Navigator.of(context).pop();
+                if (isCreated) {
+                  fetchReports(); // Refresh the list of reports
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Failed to create report")));
+                }
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

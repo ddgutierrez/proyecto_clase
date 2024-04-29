@@ -16,14 +16,16 @@ class SupportController {
     }
   }
 
-  Future<bool> validateCredentials(String email, String password) async {
+  Future<String?> validateCredentials(String email, String password) async {
     try {
       List<UserSupport> users = await apiService.fetchSupportUsers();
-      return users
-          .any((user) => user.email == email && user.password == password);
+      var user = users.firstWhere(
+        (user) => user.email == email && user.password == password,
+      );
+      return user?.id;  // Return the user ID if found
     } catch (e) {
       print("Error validating credentials: $e");
-      return false;
+      return null;
     }
   }
 
