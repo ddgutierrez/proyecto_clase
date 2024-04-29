@@ -24,7 +24,6 @@ class SupportController {
       );
       return user?.id;  // Return the user ID if found
     } catch (e) {
-      print("Error validating credentials: $e");
       return null;
     }
   }

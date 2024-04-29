@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../models/user_support.dart';
 import '../controllers/support_controller.dart';
-import '../controllers/client_controller.dart';
+import '../services/api_service_coordinator.dart';
+import '../models/client.dart';
 // Ensure this import path is correct
 
 class CoordinatorDashboard extends StatefulWidget {
@@ -313,64 +314,74 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
     );
   }
 }
-
 class ClientManagement extends StatefulWidget {
   const ClientManagement({super.key});
 
   @override
   _ClientManagementState createState() => _ClientManagementState();
 }
-
 class _ClientManagementState extends State<ClientManagement> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final ClientController clientController = ClientController();
+  final TextEditingController addNameController = TextEditingController();
+  final TextEditingController editNameController = TextEditingController();
+  final TextEditingController editIdController = TextEditingController();
+  List<Client> clients = [];
+  String? selectedClientId;
+  ApiServiceCoordinator apiService = ApiServiceCoordinator();
 
+  @override
+  void initState() {
+    super.initState();
+    fetchClients();
+  }
+  Future<void> fetchClients() async {
+    try {
+      clients = await apiService.fetchClients();
+      if (clients.isNotEmpty) {
+        selectedClientId = clients.first.id.toString();
+        editNameController.text = clients.first.name;
+        editIdController.text = clients.first.id.toString();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load clients: $e')));
+    }
+  }
   void addClient() async {
-    if (nameController.text.isNotEmpty) {
+    if (addNameController.text.isNotEmpty) {
       try {
-        await clientController.addClient(nameController.text);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Client added successfully')));
-        nameController.clear();
+        await apiService.addClient({'name': addNameController.text} as String);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client added successfully')));
+        addNameController.clear();
+        fetchClients();  // Refresh the list after adding
       } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Failed to add client: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add client: $e')));
       }
     }
   }
 
   void updateClient() async {
-    if (idController.text.isNotEmpty && nameController.text.isNotEmpty) {
+    if (selectedClientId != null && editNameController.text.isNotEmpty) {
       try {
-        await clientController.updateClient(
-            idController.text, nameController.text);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Client updated successfully')));
-        idController.clear();
-        nameController.clear();
+        await apiService.updateClient(selectedClientId!, {'name': editNameController.text} as String);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client updated successfully')));
+        fetchClients();  // Refresh the list after updating
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update client: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update client: $e')));
       }
     }
   }
 
   void deleteClient() async {
-    if (idController.text.isNotEmpty) {
+    if (selectedClientId != null) {
       try {
-        await clientController.deleteClient(idController.text);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Client deleted successfully')));
-        idController.clear();
+        await apiService.deleteClient(selectedClientId!);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Client deleted successfully')));
+        fetchClients();  // Refresh the list after deleting
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete client: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete client: $e')));
       }
     }
   }
-
-  @override
+    @override
   Widget build(BuildContext context) {
     return ListView(children: [
       ExpansionTile(
@@ -378,47 +389,68 @@ class _ClientManagementState extends State<ClientManagement> {
         childrenPadding: const EdgeInsets.all(8),
         children: [
           TextFormField(
-            controller: nameController,
+            controller: addNameController,
             decoration: const InputDecoration(labelText: 'Name'),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(
-              onPressed: addClient, child: const Text('Save Client')),
+          ElevatedButton(onPressed: addClient, child: const Text('Save Client')),
         ],
       ),
-      ExpansionTile(
-        title: const Text('Edit Client'),
-        childrenPadding: const EdgeInsets.all(8),
-        children: [
-          TextFormField(
-            controller: idController,
-            decoration: const InputDecoration(labelText: 'ID'),
-          ),
-          TextFormField(
-            controller: nameController,
-            decoration: const InputDecoration(labelText: 'Name'),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-              onPressed: updateClient, child: const Text('Save Changes')),
-        ],
-      ),
-      ExpansionTile(
-        title: const Text('Delete Client'),
-        childrenPadding: const EdgeInsets.all(8),
-        children: [
-          TextFormField(
-            controller: idController,
-            decoration: const InputDecoration(labelText: 'ID'),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-              onPressed: deleteClient, child: const Text('Delete Client')),
-        ],
-      ),
+      if (clients.isNotEmpty) ...[
+        ExpansionTile(
+          title: const Text('Edit Client'),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [
+            DropdownButton<String>(
+              value: selectedClientId,
+              onChanged: (value) {
+                setState(() {
+                  selectedClientId = value;
+                  var selectedClient = clients.firstWhere((client) => client.id.toString() == value);
+                  editNameController.text = selectedClient.name;
+                  editIdController.text = selectedClient.id.toString();
+                });
+              },
+              items: clients.map((client) => DropdownMenuItem<String>(
+                value: client.id.toString(),
+                child: Text(client.name),
+              )).toList(),
+            ),
+            TextFormField(
+              controller: editNameController,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(onPressed: updateClient, child: const Text('Save Changes')),
+          ],
+        ),
+        ExpansionTile(
+          title: const Text('Delete Client'),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [
+            DropdownButton<String>(
+              value: selectedClientId,
+              onChanged: (value) {
+                setState(() {
+                  selectedClientId = value;
+                  var selectedClient = clients.firstWhere((client) => client.id.toString() == value);
+                  editIdController.text = selectedClient.id.toString();
+                });
+              },
+              items: clients.map((client) => DropdownMenuItem<String>(
+                value: client.id.toString(),
+                child: Text(client.name),
+              )).toList(),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(onPressed: deleteClient, child: const Text('Delete Client')),
+          ],
+        ),
+      ],
     ]);
   }
 }
+
 
 class WorkReportEvaluation extends StatelessWidget {
   const WorkReportEvaluation({super.key});

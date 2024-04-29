@@ -138,12 +138,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login(BuildContext context) async {
+    bool coordinatorAuthenticated = await coordinatorController.validateCredentials(
+    emailController.text, 
+    passwordController.text
+  );
   String? supportId = await supportController.validateCredentials(
     emailController.text, 
     passwordController.text
   );
-
-  if (supportId != null) {
+    if (coordinatorAuthenticated) {
+    Navigator.pushNamed(context, '/coordinator');
+  }else if (supportId != null) {
     // If supportId is not null, navigate to the /support route with the supportUserId
     Navigator.pushNamed(
       context, 
