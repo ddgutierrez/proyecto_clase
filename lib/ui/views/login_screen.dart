@@ -138,27 +138,23 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login(BuildContext context) async {
-    bool coordinatorAuthenticated = await coordinatorController.validateCredentials(
-    emailController.text, 
-    passwordController.text
-  );
-  String? supportId = await supportController.validateCredentials(
-    emailController.text, 
-    passwordController.text
-  );
+    bool coordinatorAuthenticated = await coordinatorController
+        .validateCredentials(emailController.text, passwordController.text);
+    String? supportId = await supportController.validateCredentials(
+        emailController.text, passwordController.text);
     if (coordinatorAuthenticated) {
-    Navigator.pushNamed(context, '/coordinator');
-  }else if (supportId != null) {
-    // If supportId is not null, navigate to the /support route with the supportUserId
-    Navigator.pushNamed(
-      context, 
-      '/support',
-      arguments: {'supportUserId': supportId}  // Pass supportUserId as an argument
-    );
-  } else {
-    // Show error message if authentication fails
-    final snackBar = SnackBar(content: Text('Invalid credentials! Please try again.'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pushNamed(context, '/coordinator');
+    } else if (supportId != null) {
+      // If supportId is not null, navigate to the /support route with the supportUserId
+      Navigator.pushNamed(context, '/support', arguments: {
+        'supportUserId': supportId
+      } // Pass supportUserId as an argument
+          );
+    } else {
+      // Show error message if authentication fails
+      final snackBar =
+          SnackBar(content: Text('Invalid credentials! Please try again.'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
-}
 }

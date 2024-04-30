@@ -27,4 +27,17 @@ class UserSupport {
       'password': password,
     };
   }
+  UserSupport copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? password,
+  }) {
+    return UserSupport(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+    );
+  }
 }

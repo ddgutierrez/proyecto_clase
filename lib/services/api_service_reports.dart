@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/report.dart';
+import '../domain/models/report.dart';
 
 class ApiServiceReports {
   final String baseUrl = 'https://retoolapi.dev/aCpDCs/data';

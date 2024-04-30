@@ -1,4 +1,4 @@
-import '../models/user_support.dart';
+import '../../domain/models/user_support.dart';
 
 class CoordinatorController {
   final List<UserSupport> _coordinators = [

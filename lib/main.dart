@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
-import 'views/login_screen.dart';
-import 'views/signup_screen.dart';
-import 'views/coordinator_dashboard.dart';
-import 'views/support_dashboard.dart';
+import 'package:get/get.dart';
+import 'ui/views/login_screen.dart';
+import 'ui/views/signup_screen.dart';
+import 'ui/views/coordinator_dashboard.dart';
+import 'ui/views/support_dashboard.dart';
+import 'ui/controllers/client_controller.dart';
+import 'data/datasources/remote/client_datasource.dart';
+import 'data/repositories/client_repository.dart';
+import 'domain/use_case/client_usecase.dart';
+import 'package:proyecto_clase/data/datasources/remote/i_client_datasource.dart';
+import 'package:proyecto_clase/domain/repositories/i_client_repository.dart';
+import 'ui/controllers/support_controller.dart';
+import 'data/datasources/remote/user_datasource.dart';
+import 'data/repositories/user_repository.dart';
+import 'domain/use_case/user_usecase.dart';
+import 'package:proyecto_clase/data/datasources/remote/i_user_datasource.dart';
+import 'package:proyecto_clase/domain/repositories/i_user_repository.dart';
+void main() {
+  Get.put<IClientDataSource>(ClientDataSource());
+  Get.put<IClientRepository>(ClientRepository(Get.find()));
+  Get.put(ClientUseCase(Get.find()));
+  Get.put(ClientController());
+  Get.put<IUserDataSource>(UserDataSource());
+  Get.put<IUserRepository>(UserRepository(Get.find()));
+  Get.put(UserUseCase(Get.find()));
+  Get.put(SupportController());
 
-void main() => runApp(const MyApp());
+  runApp(const MyApp());
+  }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

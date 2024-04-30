@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/support_controller.dart';
-import '../models/user_support.dart';
+import '../../domain/models/user_support.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -14,6 +14,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   final SupportController supportController = SupportController();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
         password: passwordController.text,
       );
       try {
-        await supportController.addSupportUser(newUser);
+        await supportController.addUser(newUser);
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

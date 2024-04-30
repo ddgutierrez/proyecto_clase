@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:proyecto_clase/views/coordinator_dashboard.dart';
-import 'package:proyecto_clase/views/login_screen.dart';
+import 'package:proyecto_clase/ui/views/coordinator_dashboard.dart';
+import 'package:proyecto_clase/ui/views/login_screen.dart';
 
 void main() {
   testWidgets('Widget login autenticación fallida',

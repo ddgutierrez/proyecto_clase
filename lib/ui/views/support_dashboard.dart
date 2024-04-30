@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/report.dart';
-import '../services/api_service_reports.dart';
+import '../../domain/models/report.dart';
+import '../../services/api_service_reports.dart';
 
 class SupportDashboard extends StatefulWidget {
   final String id;
