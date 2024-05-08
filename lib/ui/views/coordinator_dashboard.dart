@@ -1,12 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:proyecto_clase/domain/models/client.dart';
 import '../../domain/models/user_support.dart';
+import '../../domain/models/report.dart';
+import '../../domain/models/client.dart';
 import '../controllers/support_controller.dart';
 import '../controllers/client_controller.dart';
+import '../controllers/report_controller.dart';
 
 class CoordinatorDashboard extends StatefulWidget {
   const CoordinatorDashboard({super.key});
@@ -368,37 +368,73 @@ class _ClientManagementState extends State<ClientManagement> {
 }
 
 class WorkReportEvaluation extends StatelessWidget {
-  const WorkReportEvaluation({super.key});
+  WorkReportEvaluation({Key? key}) : super(key: key);
+
+  final ReportController controller = Get.find<ReportController>();
+  final TextEditingController reportIdController = TextEditingController();
+  double _currentRating = 3;
+  final RxString selectedReportDescription = ''.obs;  // Reactive string to handle report description
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: [
-        const Text('Evaluación de Informes de Trabajo',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        TextFormField(
-            decoration: const InputDecoration(labelText: 'Id del Informe')),
-        Container(
-          alignment: Alignment.center,
-          child: const Text('Preview del Informe'),
-        ),
-        const Text('Evaluación',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        Center(
-            child: RatingBar.builder(
-          initialRating: 3,
-          minRating: 1,
-          direction: Axis.horizontal,
-          allowHalfRating: true,
-          itemCount: 5,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-          itemBuilder: (context, _) =>
-              const Icon(Icons.star, color: Colors.amber),
-          onRatingUpdate: (rating) {},
-        ))
-      ],
-    );
+    return Obx(() => ListView(
+          padding: const EdgeInsets.all(8),
+          children: [
+            const Text('Evaluación de Informes de Trabajo',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            DropdownButton<Report>(
+              isExpanded: true,
+              hint: const Text("Select a Report"),
+              value: controller.reports.firstWhereOrNull((report) => !report.revised),
+              items: controller.reports.where((report) => !report.revised).map((report) {
+                return DropdownMenuItem<Report>(
+                  value: report,
+                  child: Text("Report ID: ${report.id}"),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  reportIdController.text = value.id.toString();
+                  _currentRating = value.review.toDouble();
+                  selectedReportDescription.value = value.report;  // Update the report description
+                }
+              },
+            ),
+            TextFormField(
+                controller: reportIdController,
+                decoration: const InputDecoration(labelText: 'Id del Informe')),
+            const Text('Descripcion del informe',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+            Text(selectedReportDescription.value,  // Display the full report description
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+            const Text('Evaluación',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Center(
+                child: RatingBar.builder(
+              initialRating: _currentRating,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+              onRatingUpdate: (rating) {
+                _currentRating = rating;
+              },
+            )),
+            ElevatedButton(
+              onPressed: () {
+                if (reportIdController.text.isNotEmpty) {
+                  controller.updateReport(int.parse(reportIdController.text), _currentRating.round());
+                }
+              },
+              child: const Text('Submit Review'),
+            )
+          ],
+        ));
   }
 }

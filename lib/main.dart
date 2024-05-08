@@ -1,33 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+//datasources/remote
+import 'package:proyecto_clase/data/datasources/remote/i_report_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/i_client_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/i_user_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/report_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/client_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/user_datasource.dart';
+
+//domain/use_case
+import 'domain/use_case/report_usecase.dart';
+import 'domain/use_case/client_usecase.dart';
+import 'domain/use_case/user_usecase.dart';
+
+//controllers
+import 'package:proyecto_clase/ui/controllers/report_controller.dart';
+import 'package:proyecto_clase/ui/controllers/support_controller.dart';
+import 'package:proyecto_clase/ui/controllers/client_controller.dart';
+
+//views
 import 'ui/views/login_screen.dart';
 import 'ui/views/signup_screen.dart';
 import 'ui/views/coordinator_dashboard.dart';
 import 'ui/views/support_dashboard.dart';
-import 'ui/controllers/client_controller.dart';
-import 'data/datasources/remote/client_datasource.dart';
+
+//repositories
 import 'data/repositories/client_repository.dart';
-import 'domain/use_case/client_usecase.dart';
-import 'package:proyecto_clase/data/datasources/remote/i_client_datasource.dart';
-import 'package:proyecto_clase/domain/repositories/i_client_repository.dart';
-import 'ui/controllers/support_controller.dart';
-import 'data/datasources/remote/user_datasource.dart';
 import 'data/repositories/user_repository.dart';
-import 'domain/use_case/user_usecase.dart';
-import 'package:proyecto_clase/data/datasources/remote/i_user_datasource.dart';
+import 'data/repositories/report_repository.dart';
+
+//i_repository
+import 'package:proyecto_clase/domain/repositories/i_client_repository.dart';
 import 'package:proyecto_clase/domain/repositories/i_user_repository.dart';
+import 'package:proyecto_clase/domain/repositories/i_report_repository.dart';
+
 void main() {
   Get.put<IClientDataSource>(ClientDataSource());
   Get.put<IClientRepository>(ClientRepository(Get.find()));
   Get.put(ClientUseCase(Get.find()));
   Get.put(ClientController());
+
   Get.put<IUserDataSource>(UserDataSource());
   Get.put<IUserRepository>(UserRepository(Get.find()));
   Get.put(UserUseCase(Get.find()));
   Get.put(SupportController());
 
+  Get.put<IReportDataSource>(ReportDataSource());
+  Get.put<IReportRepository>(ReportRepository(Get.find()));
+  Get.put(ReportUseCase(Get.find()));
+  Get.put(ReportController());
+  
   runApp(const MyApp());
-  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -51,16 +75,15 @@ class MyApp extends StatelessWidget {
       case '/signup':
         return MaterialPageRoute(builder: (context) => const SignupScreen());
       case '/coordinator':
-        return MaterialPageRoute(builder: (context) => const CoordinatorDashboard());
+        return MaterialPageRoute(
+            builder: (context) => const CoordinatorDashboard());
       case '/support':
-        // Extract the arguments and pass them to the SupportDashboard
         final args = settings.arguments as Map<String, dynamic>?;
-        String id = args?['supportUserId'] ?? '0';  // Default to '0' or handle appropriately
+        String id = args?['supportUserId'] ?? '0';
         return MaterialPageRoute(
           builder: (context) => SupportDashboard(id: id),
         );
       default:
-        // Undefined route
         return _errorRoute();
     }
   }
