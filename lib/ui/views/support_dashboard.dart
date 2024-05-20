@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart'; // Add this import
 import '../../domain/models/report.dart';
 import '../controllers/report_controller.dart';
+import '../controllers/client_controller.dart';
 
 class SupportDashboard extends StatelessWidget {
   final String id;
@@ -9,8 +11,11 @@ class SupportDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ReportController controller = Get.find();
-    controller.getReportsBySupportUser(int.parse(id));
+    final ReportController reportController = Get.find<ReportController>();
+    final ClientController clientController = Get.find<ClientController>();
+
+    reportController.getReportsBySupportUser(int.parse(id));
+    clientController.getClients();  // Ensure clients are fetched
 
     return Scaffold(
       appBar: AppBar(
@@ -26,18 +31,19 @@ class SupportDashboard extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (reportController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
-        } else if (controller.reports.isEmpty) {
+        } else if (reportController.reports.isEmpty) {
           return const Center(child: Text('No reports available for review.'));
         } else {
           return ListView.builder(
-            itemCount: controller.reports.length,
+            itemCount: reportController.reports.length,
             itemBuilder: (context, index) {
-              final report = controller.reports[index];
+              final report = reportController.reports[index];
+              final formattedDateTime = DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.parse(report.startTime)); // Format the date and time
               return ListTile(
                 title: Text(report.report),
-                subtitle: Text('Start Time: ${report.startTime}, Duration: ${report.duration} hours, Revised: ${report.revised}, Review: ${report.review}, Client: ${report.clientName}'),
+                subtitle: Text('Start Time: $formattedDateTime, Duration: ${report.duration} hours, Revised: ${report.revised}, Review: ${report.review}, Client: ${report.clientName}'),
               );
             },
           );
@@ -45,49 +51,128 @@ class SupportDashboard extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => showAddReportDialog(context, controller, int.parse(id)),
+        onPressed: () => showAddReportDialog(context, reportController, clientController, int.parse(id)),
       ),
     );
   }
-    void showAddReportDialog(BuildContext context, ReportController controller, int userId) {
+
+  void showAddReportDialog(BuildContext context, ReportController reportController, ClientController clientController, int userId) {
     showDialog(
       context: context,
       builder: (context) {
-        String reportDesc = '', clientName = '', startTime = '', duration = '';
-        return AlertDialog(
-          title: const Text('Create New Report'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(onChanged: (value) => reportDesc = value, decoration: const InputDecoration(labelText: 'Descripcion del informe')),
-              TextField(onChanged: (value) => clientName = value, decoration: const InputDecoration(labelText: 'Nombre del cliente')),
-              TextField(onChanged: (value) => startTime = value, decoration: const InputDecoration(labelText: 'Hora de inicio (HH:MM)')),
-              TextField(onChanged: (value) => duration = value, decoration: const InputDecoration(labelText: 'Tiempo de duracion (horas)')),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                if (reportDesc.isNotEmpty && clientName.isNotEmpty && startTime.isNotEmpty && duration.isNotEmpty) {
-                  Report newReport = Report(
-                    report: reportDesc,
-                    review: 0,
-                    revised: false,
-                    duration: int.parse(duration),
-                    startTime: startTime,
-                    supportUser: userId,
-                    clientName: clientName,
-                  );
-                  bool isCreated = await controller.createReport(newReport);
-                  Navigator.of(context).pop();
-                  if (!isCreated) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to create report")));
-                  }
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          ],
+        final _formKey = GlobalKey<FormState>();
+        String reportDesc = '';
+        String? clientName;  // Ensure clientName is nullable
+        DateTime? selectedDateTime;
+        String duration = '';
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Create New Report'),
+              content: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      onChanged: (value) => reportDesc = value,
+                      decoration: const InputDecoration(labelText: 'Descripcion del informe'),
+                      validator: (value) => value!.isEmpty ? 'Field required' : null,
+                    ),
+                    Obx(() {
+                      if (clientController.clients.isEmpty) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else {
+                        return DropdownButtonFormField<String>(
+                          value: clientName,
+                          items: clientController.clients.map((client) {
+                            return DropdownMenuItem<String>(
+                              value: client.name,
+                              child: Text(client.name),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              clientName = value;
+                            });
+                          },
+                          decoration: const InputDecoration(labelText: 'Nombre del cliente'),
+                          validator: (value) => value == null ? 'Field required' : null,
+                        );
+                      }
+                    }),
+                    TextFormField(
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101),
+                        );
+                        if (pickedDate != null) {
+                          TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          if (pickedTime != null) {
+                            setState(() {
+                              selectedDateTime = DateTime(
+                                pickedDate.year,
+                                pickedDate.month,
+                                pickedDate.day,
+                                pickedTime.hour,
+                                pickedTime.minute,
+                              );
+                            });
+                          }
+                        }
+                      },
+                      decoration: InputDecoration(
+                        labelText: selectedDateTime == null
+                            ? 'Fecha y hora de inicio'
+                            : 'Fecha y hora de inicio: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedDateTime!)}',
+                      ),
+                      validator: (value) => selectedDateTime == null ? 'Field required' : null,
+                    ),
+                    TextFormField(
+                      onChanged: (value) => duration = value,
+                      decoration: const InputDecoration(labelText: 'Tiempo de duracion (horas)'),
+                      validator: (value) => value!.isEmpty ? 'Field required' : null,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      String formattedDateTime = selectedDateTime!.toIso8601String();
+                      Report newReport = Report(
+                        report: reportDesc,
+                        review: 0,
+                        revised: false,
+                        duration: int.parse(duration),
+                        startTime: formattedDateTime,
+                        supportUser: userId,
+                        clientName: clientName!,
+                      );
+                      bool isCreated = await reportController.createReport(newReport);
+                      Navigator.of(context).pop();
+                      if (!isCreated) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to create report")));
+                      } else {
+                        reportController.getReportsBySupportUser(userId);  // Fetch reports only for the specific support user
+                      }
+                    }
+                  },
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

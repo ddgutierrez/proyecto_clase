@@ -6,11 +6,9 @@ import 'package:loggy/loggy.dart';
 class ReportController extends GetxController with UiLoggy {
   final RxList<Report> _reports = <Report>[].obs;
   final ReportUseCase reportUseCase = Get.find();
+  final RxBool isLoading = false.obs; // Added isLoading observable
 
   List<Report> get reports => _reports;
-
-  get isLoading => null;
-
 
   @override
   void onInit() {
@@ -21,9 +19,12 @@ class ReportController extends GetxController with UiLoggy {
   Future<void> getReports() async {
     logInfo("Fetching reports");
     try {
+      isLoading.value = true; // Set loading to true before fetching reports
       _reports.value = await reportUseCase.getReports();
     } catch (e) {
       logError('Failed to fetch reports', e);
+    } finally {
+      isLoading.value = false; // Set loading to false after fetching reports
     }
   }
 
@@ -44,7 +45,6 @@ class ReportController extends GetxController with UiLoggy {
     try {
       final success = await reportUseCase.updateReport(reportId, reviewScore);
       if (success) {
-        updateReport(reportId, reviewScore);
         getReports();
       }
       return success;
@@ -54,12 +54,15 @@ class ReportController extends GetxController with UiLoggy {
     }
   }
 
-  Future<List<Report>> getReportsBySupportUser(int supportUserId) async {
+   Future<void> getReportsBySupportUser(int supportUserId) async {
+    logInfo("Fetching reports for support user: $supportUserId");
     try {
-      return await reportUseCase.getReportsBySupportUser(supportUserId);
+      isLoading.value = true;
+      _reports.value = await reportUseCase.getReportsBySupportUser(supportUserId);
     } catch (e) {
       logError('Failed to fetch reports for support user', e);
-      return [];
+    } finally {
+      isLoading.value = false;
     }
   }
 }

@@ -46,7 +46,7 @@ class Report {
       startTime: json['start_time'] as String? ??
           '', // Default to empty string if null.
       supportUser: json['Support_User'] as int,
-      clientName: json['clientNmae'] as String? ??
+      clientName: json['clientName'] as String? ??
       '', // Default to empty string if null.
     );
   }

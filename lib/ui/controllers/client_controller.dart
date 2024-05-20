@@ -23,6 +23,14 @@ class ClientController extends GetxController {
 
   Future<bool> addClient(Client client) async {
     logInfo("Add client");
+    // Check for duplicates before adding
+    bool exists =
+        _clients.any((existingClient) => existingClient.name == client.name);
+    if (exists) {
+      logInfo("Client with the same name already exists");
+      return false; // Indicate that the client already exists
+    }
+
     bool success = await clientUseCase.addClient(client);
     if (success) {
       getClients(); // Refresh the list to include the new client
@@ -30,12 +38,13 @@ class ClientController extends GetxController {
     return success; // Return the status for the UI to use
   }
 
-  Future<void> updateClient(Client client) async {
+  Future<bool> updateClient(Client client) async {
     logInfo("Update client");
     bool success = await clientUseCase.updateClient(client);
     if (success) {
-      getClients();
+      await getClients(); // Ensure to await the getClients call
     }
+    return success; // Return the success status
   }
 
   Future<void> deleteClient(int id) async {

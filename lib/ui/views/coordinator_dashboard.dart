@@ -29,6 +29,14 @@ class _DashboardState extends State<CoordinatorDashboard> {
         {
           return WorkReportEvaluation();
         }
+      case 3:
+        {
+          return ReportManagement();
+        }
+      case 4:
+        {
+          return SupportUserStats();
+        }
       default:
         {
           return ClientManagement();
@@ -65,13 +73,19 @@ class _DashboardState extends State<CoordinatorDashboard> {
             destinations: const [
               NavigationRailDestination(
                   icon: Icon(Icons.account_box),
-                  label: Text('Aministrar Usuarios')),
+                  label: Text('Aministrar Clientes')),
               NavigationRailDestination(
                   icon: Icon(Icons.support_agent),
                   label: Text('Administrar Usuarios\nde Soporte')),
               NavigationRailDestination(
                   icon: Icon(Icons.rate_review),
-                  label: Text('Evaluar Reportes'))
+                  label: Text('Evaluar Reportes')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.report), 
+                  label: Text('Administrar Reportes')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.assessment), 
+                  label: Text('Estadisticas de Usuarios\nde Soporte'))
             ],
             selectedIndex: _selectedIndex,
             onDestinationSelected: (value) => setState(() {
@@ -108,48 +122,50 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => ListView(
-      padding: const EdgeInsets.all(8.0),
-      children: [
-        for (var user in supportController.users)
-          ListTile(
-            title: Text(user.name),
-            subtitle: Text(user.email),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+          padding: const EdgeInsets.all(8.0),
+          children: [
+            ExpansionTile(
+              title: const Text('Add User',
+                  style: TextStyle(color: Colors.deepPurple)),
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => showEditDialog(context, user),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => supportController.deleteUser(int.parse(user.id)),
+                buildTextField(addNameController, 'Name'),
+                buildTextField(addEmailController, 'Email'),
+                buildTextField(addPasswordController, 'Password',
+                    isPassword: true),
+                ElevatedButton(
+                  onPressed: addSupportUser,
+                  child: const Text('Save User'),
                 ),
               ],
             ),
-          ),
-        
-        ExpansionTile(
-          title: const Text('Add User', style: TextStyle(color: Colors.deepPurple)),
-          children: [
-            buildTextField(addNameController, 'Name'),
-            buildTextField(addEmailController, 'Email'),
-            buildTextField(addPasswordController, 'Password', isPassword: true),
-            ElevatedButton(
-              onPressed: addSupportUser,
-              child: const Text('Save User'),
-            ),
+            for (var user in supportController.users)
+              ListTile(
+                title: Text(user.name),
+                subtitle: Text(user.email),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => showEditDialog(context, user),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () =>
+                          supportController.deleteUser(int.parse(user.id)),
+                    ),
+                  ],
+                ),
+              ),
           ],
-        ),
-      ],
-    ));
+        ));
   }
 
   void addSupportUser() async {
     final UserSupport newUser = UserSupport(
       id: DateTime.now()
-            .millisecondsSinceEpoch
-            .toString(), // This will be set by the backend
+          .millisecondsSinceEpoch
+          .toString(), // This will be set by the backend
       name: addNameController.text,
       email: addEmailController.text,
       password: addPasswordController.text,
@@ -178,9 +194,12 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              buildTextField(addNameController, 'Name', initialValue: user.name),
-              buildTextField(addEmailController, 'Email', initialValue: user.email),
-              buildTextField(addPasswordController, 'Password', isPassword: true),
+              buildTextField(addNameController, 'Name',
+                  initialValue: user.name),
+              buildTextField(addEmailController, 'Email',
+                  initialValue: user.email),
+              buildTextField(addPasswordController, 'Password',
+                  isPassword: true),
             ],
           ),
           actions: [
@@ -193,7 +212,9 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
                 final updatedUser = user.copyWith(
                   name: addNameController.text,
                   email: addEmailController.text,
-                  password: addPasswordController.text.isNotEmpty ? addPasswordController.text : user.password,
+                  password: addPasswordController.text.isNotEmpty
+                      ? addPasswordController.text
+                      : user.password,
                 );
                 final success = await supportController.updateUser(updatedUser);
                 if (success) {
@@ -212,7 +233,8 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
     );
   }
 
-  Widget buildTextField(TextEditingController controller, String label, {bool isPassword = false, String? initialValue}) {
+  Widget buildTextField(TextEditingController controller, String label,
+      {bool isPassword = false, String? initialValue}) {
     return TextField(
       controller: controller..text = initialValue ?? '',
       decoration: InputDecoration(labelText: label),
@@ -227,7 +249,6 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
   }
 }
 
-
 class ClientManagement extends StatefulWidget {
   const ClientManagement({Key? key}) : super(key: key);
 
@@ -238,8 +259,7 @@ class ClientManagement extends StatefulWidget {
 class _ClientManagementState extends State<ClientManagement> {
   final TextEditingController addNameController = TextEditingController();
   final TextEditingController editNameController = TextEditingController();
-  final ClientController clientController =
-      Get.find<ClientController>(); // Assuming GetX for DI
+  final ClientController clientController = Get.find<ClientController>();
   Client? selectedClient;
 
   @override
@@ -248,20 +268,28 @@ class _ClientManagementState extends State<ClientManagement> {
     clientController.getClients();
   }
 
-  void addClient() async {
+  Future<void> addClient() async {
     if (addNameController.text.isNotEmpty) {
+      bool exists = clientController.clients.any(
+          (existingClient) => existingClient.name == addNameController.text);
+      if (exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Client already exists')));
+        return;
+      }
+
       Client newClient = Client(
-        id: DateTime.now()
-            .millisecondsSinceEpoch
-            .toString(), // Assume the ID is generated by the backend
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: addNameController.text,
       );
       bool success = await clientController.addClient(newClient);
-      addNameController
-          .clear(); // Clear the input field after the attempt to add
+      addNameController.clear();
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Client added successfully')));
+        setState(() {
+          selectedClient = null;
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to add client')));
@@ -269,103 +297,121 @@ class _ClientManagementState extends State<ClientManagement> {
     }
   }
 
-  void updateSelectedClient() async {
+  Future<void> updateSelectedClient() async {
     if (selectedClient != null && editNameController.text.isNotEmpty) {
       Client updatedClient = Client(
         id: selectedClient!.id,
         name: editNameController.text,
       );
-      await clientController.updateClient(updatedClient);
-      // Add success check if needed
+      bool success = await clientController.updateClient(updatedClient);
       editNameController.clear();
-      selectedClient = null; // Clear the selected client after updating
+      if (success) {
+        setState(() {
+          selectedClient = null;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to update client')));
+      }
     }
   }
 
-  void deleteSelectedClient() async {
+  Future<void> deleteSelectedClient() async {
     if (selectedClient != null) {
       await clientController.deleteClient(int.parse(selectedClient!.id));
-      selectedClient = null;
+      setState(() {
+        selectedClient = null;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    ClientController clientController = Get.find();
-    return Obx(() => ListView(children: [
-          ExpansionTile(
-            title: const Text('Add Client'),
-            childrenPadding: const EdgeInsets.all(8),
-            children: [
-              TextFormField(
-                controller: addNameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+    return Obx(() => ListView(
+          padding: const EdgeInsets.all(8.0),
+          children: [
+                        ExpansionTile(
+              title: const Text('Add Client',
+                  style: TextStyle(color: Colors.deepPurple)),
+              children: [
+                buildTextField(addNameController, 'Name'),
+                ElevatedButton(
+                    onPressed: addClient, child: const Text('Save Client')),
+              ],
+            ),
+            for (var client in clientController.clients)
+              ListTile(
+                title: Text(client.name),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => showEditDialog(context, client),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () =>
+                          clientController.deleteClient(int.parse(client.id)),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                  onPressed: addClient, child: const Text('Save Client')),
+          ],
+        ));
+  }
+
+  void showEditDialog(BuildContext context, Client client) {
+    editNameController.text = client.name;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Client'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildTextField(editNameController, 'Name'),
             ],
           ),
-          if (clientController.clients.isNotEmpty) ...[
-            ExpansionTile(
-              title: const Text('Edit Client'),
-              childrenPadding: const EdgeInsets.all(8),
-              children: [
-                DropdownButton<Client>(
-                  value: selectedClient,
-                  onChanged: (Client? newValue) {
-                    setState(() {
-                      selectedClient = newValue;
-                      if (newValue != null) {
-                        editNameController.text = newValue.name;
-                      }
-                    });
-                  },
-                  items: clientController.clients.map((Client client) {
-                    return DropdownMenuItem<Client>(
-                      value: client,
-                      child: Text(client.name),
-                    );
-                  }).toList(),
-                ),
-                TextFormField(
-                  controller: editNameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                    onPressed: updateSelectedClient,
-                    child: const Text('Update Client')),
-              ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
             ),
-            ExpansionTile(
-              title: const Text('Delete Client'),
-              childrenPadding: const EdgeInsets.all(8),
-              children: [
-                DropdownButton<Client>(
-                  value: selectedClient,
-                  onChanged: (Client? newValue) {
-                    setState(() {
-                      selectedClient = newValue;
-                    });
-                  },
-                  items: clientController.clients.map((Client client) {
-                    return DropdownMenuItem<Client>(
-                      value: client,
-                      child: Text(client.name),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                    onPressed: deleteSelectedClient,
-                    child: const Text('Delete Client')),
-              ],
+            TextButton(
+              onPressed: () async {
+                final updatedClient = client.copyWith(
+                  name: editNameController.text,
+                );
+                final success = await clientController.updateClient(updatedClient);
+                if (success) {
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to update client')),
+                  );
+                }
+              },
+              child: const Text('Save Changes'),
             ),
           ],
-        ]));
+        );
+      },
+    );
+  }
+
+  Widget buildTextField(TextEditingController controller, String label,
+      {bool isPassword = false}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      obscureText: isPassword,
+    );
   }
 }
+
 
 class WorkReportEvaluation extends StatelessWidget {
   WorkReportEvaluation({Key? key}) : super(key: key);
@@ -373,7 +419,8 @@ class WorkReportEvaluation extends StatelessWidget {
   final ReportController controller = Get.find<ReportController>();
   final TextEditingController reportIdController = TextEditingController();
   double _currentRating = 3;
-  final RxString selectedReportDescription = ''.obs;  // Reactive string to handle report description
+  final RxString selectedReportDescription =
+      ''.obs; // Reactive string to handle report description
 
   @override
   Widget build(BuildContext context) {
@@ -386,8 +433,11 @@ class WorkReportEvaluation extends StatelessWidget {
             DropdownButton<Report>(
               isExpanded: true,
               hint: const Text("Select a Report"),
-              value: controller.reports.firstWhereOrNull((report) => !report.revised),
-              items: controller.reports.where((report) => !report.revised).map((report) {
+              value: controller.reports
+                  .firstWhereOrNull((report) => !report.revised),
+              items: controller.reports
+                  .where((report) => !report.revised)
+                  .map((report) {
                 return DropdownMenuItem<Report>(
                   value: report,
                   child: Text("Report ID: ${report.id}"),
@@ -397,7 +447,8 @@ class WorkReportEvaluation extends StatelessWidget {
                 if (value != null) {
                   reportIdController.text = value.id.toString();
                   _currentRating = value.review.toDouble();
-                  selectedReportDescription.value = value.report;  // Update the report description
+                  selectedReportDescription.value =
+                      value.report; // Update the report description
                 }
               },
             ),
@@ -407,7 +458,9 @@ class WorkReportEvaluation extends StatelessWidget {
             const Text('Descripcion del informe',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-            Text(selectedReportDescription.value,  // Display the full report description
+            Text(
+                selectedReportDescription
+                    .value, // Display the full report description
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: Colors.grey)),
             const Text('Evaluación',
@@ -421,7 +474,8 @@ class WorkReportEvaluation extends StatelessWidget {
               allowHalfRating: true,
               itemCount: 5,
               itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+              itemBuilder: (context, _) =>
+                  const Icon(Icons.star, color: Colors.amber),
               onRatingUpdate: (rating) {
                 _currentRating = rating;
               },
@@ -429,12 +483,165 @@ class WorkReportEvaluation extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (reportIdController.text.isNotEmpty) {
-                  controller.updateReport(int.parse(reportIdController.text), _currentRating.round());
+                  controller.updateReport(int.parse(reportIdController.text),
+                      _currentRating.round());
                 }
               },
               child: const Text('Submit Review'),
             )
           ],
         ));
+  }
+}
+
+class ReportManagement extends StatefulWidget {
+  const ReportManagement({Key? key}) : super(key: key);
+
+  @override
+  _ReportManagementState createState() => _ReportManagementState();
+}
+
+class _ReportManagementState extends State<ReportManagement> {
+  final ReportController reportController = Get.find<ReportController>();
+  final ClientController clientController = Get.find<ClientController>();
+  Client? selectedClient;
+
+  @override
+  void initState() {
+    super.initState();
+    clientController.getClients();
+    reportController.getReports();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Column(
+          children: [
+            Card(
+              margin: const EdgeInsets.all(10.0),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButton<Client>(
+                        isExpanded: true,
+                        value: selectedClient,
+                        hint: const Text('Select a Client'),
+                        onChanged: (Client? newValue) {
+                          setState(() {
+                            selectedClient = newValue;
+                          });
+                        },
+                        items: clientController.clients.map((Client client) {
+                          return DropdownMenuItem<Client>(
+                            value: client,
+                            child: Text(client.name),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedClient = null;
+                        });
+                      },
+                      child: const Text('Clear Filter'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: reportController.reports
+                    .where((report) =>
+                        selectedClient == null ||
+                        report.clientName == selectedClient!.name)
+                    .map((report) {
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 10.0),
+                    child: ListTile(
+                      title: Text('ID de reporte: ${report.id}'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Descripcion del problema: ${report.report}'),
+                          Text('Calificacion: ${report.review}'),
+                          Text('Duracion: ${report.duration} horas'),
+                          Text('Hora de inicio: ${report.startTime}'),
+                          Text('Nombre del cliente: ${report.clientName}'),
+                          Text('ID de usuario de soporte: ${report.supportUser}'),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ));
+  }
+}
+class SupportUserStats extends StatelessWidget {
+  final SupportController supportController = Get.find<SupportController>();
+  final ReportController reportController = Get.find<ReportController>();
+
+  SupportUserStats({Key? key}) : super(key: key) {
+    supportController.getUsers();
+    reportController.getReports();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final users = supportController.users;
+      final reports = reportController.reports.where((report) => report.revised).toList();
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(8.0),
+        itemCount: users.length,
+        itemBuilder: (context, index) {
+          final user = users[index];
+          int userId;
+          
+          // Ensure user ID is correctly parsed
+          try {
+            userId = int.parse(user.id);
+          } catch (e) {
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+              child: ListTile(
+                title: Text(user.name),
+                subtitle: const Text('Error parsing user ID'),
+              ),
+            );
+          }
+          
+          final userReports = reports.where((report) => report.supportUser == userId).toList();
+          final reportCount = userReports.length;
+          final averageReview = userReports.isEmpty
+              ? 0.0
+              : userReports.map((report) => report.review).reduce((a, b) => a + b) / reportCount;
+
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            child: ListTile(
+              title: Text(user.name),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Cantidad de reportes: $reportCount'),
+                  Text('Calificacion promedio: ${averageReview.toStringAsFixed(1)}'),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 }
