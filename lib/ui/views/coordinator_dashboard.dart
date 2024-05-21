@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 import '../../domain/models/user_support.dart';
 import '../../domain/models/report.dart';
 import '../../domain/models/client.dart';
@@ -416,81 +417,137 @@ class _ClientManagementState extends State<ClientManagement> {
 class WorkReportEvaluation extends StatelessWidget {
   WorkReportEvaluation({Key? key}) : super(key: key);
 
-  final ReportController controller = Get.find<ReportController>();
+  final ReportController reportController = Get.find<ReportController>();
   final TextEditingController reportIdController = TextEditingController();
+  final Rx<Report?> selectedReport = Rx<Report?>(null);
   double _currentRating = 3;
-  final RxString selectedReportDescription =
-      ''.obs; // Reactive string to handle report description
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => ListView(
-          padding: const EdgeInsets.all(8),
-          children: [
-            const Text('Evaluación de Informes de Trabajo',
+    return Obx(() => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const Text(
+                'Evaluación de Informes de Trabajo',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            DropdownButton<Report>(
-              isExpanded: true,
-              hint: const Text("Select a Report"),
-              value: controller.reports
-                  .firstWhereOrNull((report) => !report.revised),
-              items: controller.reports
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              if (reportController.reports
                   .where((report) => !report.revised)
-                  .map((report) {
-                return DropdownMenuItem<Report>(
-                  value: report,
-                  child: Text("Report ID: ${report.id}"),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  reportIdController.text = value.id.toString();
-                  _currentRating = value.review.toDouble();
-                  selectedReportDescription.value =
-                      value.report; // Update the report description
-                }
-              },
-            ),
-            TextFormField(
-                controller: reportIdController,
-                decoration: const InputDecoration(labelText: 'Id del Informe')),
-            const Text('Descripcion del informe',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-            Text(
-                selectedReportDescription
-                    .value, // Display the full report description
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey)),
-            const Text('Evaluación',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Center(
-                child: RatingBar.builder(
-              initialRating: _currentRating,
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) =>
-                  const Icon(Icons.star, color: Colors.amber),
-              onRatingUpdate: (rating) {
-                _currentRating = rating;
-              },
-            )),
-            ElevatedButton(
-              onPressed: () {
-                if (reportIdController.text.isNotEmpty) {
-                  controller.updateReport(int.parse(reportIdController.text),
-                      _currentRating.round());
-                }
-              },
-              child: const Text('Submit Review'),
-            )
-          ],
+                  .isEmpty)
+                const Text(
+                  'No hay reportes por revisar',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                )
+              else
+                ...[
+                  DropdownButtonFormField<Report>(
+                    isExpanded: true,
+                    hint: const Text("Seleccione un Informe"),
+                    value: selectedReport.value,
+                    items: reportController.reports
+                        .where((report) => !report.revised)
+                        .map((report) {
+                      return DropdownMenuItem<Report>(
+                        value: report,
+                        child: Text("Report ID: ${report.id}"),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        selectedReport.value = value;
+                        _currentRating = value.review.toDouble();
+                      }
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Informe',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value == null ? 'Seleccione un informe' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  if (selectedReport.value != null) ...[
+                    buildReportDetail('Reporte', selectedReport.value!.report),
+                    buildReportDetail(
+                        'Duración', '${selectedReport.value!.duration} horas'),
+                    buildReportDetail(
+                        'Cliente', selectedReport.value!.clientName),
+                    buildReportDetail(
+                        'Fecha y Hora de Inicio',
+                        DateFormat('yyyy-MM-dd – kk:mm').format(
+                            DateTime.parse(selectedReport.value!.startTime))),
+                    buildReportDetail('Usuario de Soporte',
+                        selectedReport.value!.supportUser.toString()),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Evaluación',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: RatingBar.builder(
+                        initialRating: _currentRating,
+                        minRating: 1,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        itemCount: 5,
+                        itemPadding:
+                            const EdgeInsets.symmetric(horizontal: 4.0),
+                        itemBuilder: (context, _) =>
+                            const Icon(Icons.star, color: Colors.amber),
+                        onRatingUpdate: (rating) {
+                          _currentRating = rating;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (selectedReport.value != null) {
+                          reportController.updateReport(
+                              selectedReport.value!.id!,
+                              _currentRating.round());
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Revisión enviada!')),
+                          );
+                          // Clear the selected report after submission
+                          selectedReport.value = null;
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Seleccione un informe')),
+                          );
+                        }
+                      },
+                      child: const Text('Enviar Revisión'),
+                    )
+                  ]
+                ]
+            ],
+          ),
         ));
+  }
+
+  Widget buildReportDetail(String title, String detail) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text(
+            '$title: ',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(detail),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -561,6 +618,8 @@ class _ReportManagementState extends State<ReportManagement> {
                         selectedClient == null ||
                         report.clientName == selectedClient!.name)
                     .map((report) {
+                  final formattedDateTime = DateFormat('yyyy-MM-dd – kk:mm')
+                      .format(DateTime.parse(report.startTime)); // Format the date and time
                   return Card(
                     margin: const EdgeInsets.symmetric(
                         vertical: 5.0, horizontal: 10.0),
@@ -572,9 +631,16 @@ class _ReportManagementState extends State<ReportManagement> {
                           Text('Descripcion del problema: ${report.report}'),
                           Text('Calificacion: ${report.review}'),
                           Text('Duracion: ${report.duration} horas'),
-                          Text('Hora de inicio: ${report.startTime}'),
+                          Text('Hora de inicio: $formattedDateTime'),
                           Text('Nombre del cliente: ${report.clientName}'),
                           Text('ID de usuario de soporte: ${report.supportUser}'),
+                          if (report.revised == false && report.review == 0)
+                            const Text(
+                              'Debe realizarse revision',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold),
+                            ),
                         ],
                       ),
                     ),
@@ -586,6 +652,7 @@ class _ReportManagementState extends State<ReportManagement> {
         ));
   }
 }
+
 class SupportUserStats extends StatelessWidget {
   final SupportController supportController = Get.find<SupportController>();
   final ReportController reportController = Get.find<ReportController>();
