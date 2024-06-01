@@ -7,8 +7,11 @@ part 'client_db.g.dart';
 @HiveType(typeId: 1)
 class ClientDb extends HiveObject {
   ClientDb({
+    required this.id,
     required this.name,
   });
   @HiveField(0)
+  String id;
+  @HiveField(1)
   String name;
 }

@@ -7,6 +7,7 @@ part 'report_db.g.dart';
 @HiveType(typeId: 3)
 class ReportDb extends HiveObject {
   ReportDb({
+    this.id,
     required this.report,
     required this.review,
     required this.revised,
@@ -16,17 +17,19 @@ class ReportDb extends HiveObject {
     required this.clientName,
   });
   @HiveField(0)
-  String report;
+  int? id;
   @HiveField(1)
-  int review;
+  String report;
   @HiveField(2)
-  bool revised;
+  int review;
   @HiveField(3)
-  int duration;
+  bool revised;
   @HiveField(4)
-  String startTime;
+  int duration;
   @HiveField(5)
-  int supportUser;
+  String startTime;
   @HiveField(6)
+  int supportUser;
+  @HiveField(7)
   String clientName;
 }
