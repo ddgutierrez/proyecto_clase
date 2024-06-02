@@ -1,9 +1,19 @@
 import '../../../domain/models/report.dart';
 
 abstract class IReportLocalDataSource {
-  Future<List<Report>> getReports();
+  Future<List<Report>> getCachedReports();
 
-  Future<bool> addReport(Report report);
+  Future<void> addOfflineReport(Report report);
+
+  Future<void> deleteReports();
+
+  Future<void> deleOfflineReport(Report report);
+
+  Future<void> cacheReports(List<Report> reports);
+
+  Future<List<Report>> getOfflineReports();
+
+  Future<void> clearOfflineReports();
 
   Future<bool> updateReport(int reportId, int reviewScore);
 
