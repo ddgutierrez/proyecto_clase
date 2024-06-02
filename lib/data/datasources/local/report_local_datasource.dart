@@ -9,7 +9,7 @@ class ReportLocalDatasource implements IReportLocalDataSource {
   @override
   Future<void> addOfflineReport(Report report) async {
     logInfo("Adding OfflineReport");
-    await Hive.box('reportDbOffline').add(ReportDb(
+    await Hive.box('reportsDbOffline').add(ReportDb(
         id: report.id,
         report: report.report,
         review: report.review,
@@ -18,7 +18,7 @@ class ReportLocalDatasource implements IReportLocalDataSource {
         startTime: report.startTime,
         supportUser: report.supportUser,
         clientName: report.clientName));
-    logInfo('addOfflineReport ${Hive.box('reportDbOffline').values.length}');
+    logInfo('addOfflineReport ${Hive.box('reportsDbOffline').values.length}');
   }
 
   @override
@@ -37,7 +37,7 @@ class ReportLocalDatasource implements IReportLocalDataSource {
           supportUser: report.supportUser,
           clientName: report.clientName));
     }
-    logInfo('cacheReports ${Hive.box('reportDb').values.length}');
+    logInfo('cacheReports ${Hive.box('reportsDb').values.length}');
   }
 
   @override
@@ -46,7 +46,7 @@ class ReportLocalDatasource implements IReportLocalDataSource {
   }
 
   @override
-  Future<void> deleOfflineReport(Report report) async {
+  Future<void> deleteOfflineReport(Report report) async {
     await Hive.box('reportsDbOffline').delete(report.id);
   }
 

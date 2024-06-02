@@ -24,7 +24,7 @@ class ReportRepository implements IReportRepository {
         for (var report in offlineReports) {
           var rta = await _reportDataSource.addReport(report);
           if (rta) {
-            await _localDataSource.deleOfflineReport(report);
+            await _localDataSource.deleteOfflineReport(report);
           } else {
             logError("getReports error adding offline report");
           }
