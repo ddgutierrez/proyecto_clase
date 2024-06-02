@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:loggy/loggy.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:proyecto_clase/data/core/network_info.dart';
+import 'package:proyecto_clase/data/datasources/local/i_report_local_datasource.dart';
+import 'package:proyecto_clase/data/datasources/local/report_local_datasource.dart';
 //datasources/remote
 import 'package:proyecto_clase/data/datasources/remote/i_report_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/i_client_datasource.dart';
@@ -7,6 +14,8 @@ import 'package:proyecto_clase/data/datasources/remote/i_user_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/report_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/client_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/user_datasource.dart';
+import 'package:proyecto_clase/data/models/report_db.dart';
+import 'package:proyecto_clase/ui/controllers/connectivity_controller.dart';
 
 //domain/use_case
 import 'domain/use_case/report_usecase.dart';
@@ -34,7 +43,24 @@ import 'package:proyecto_clase/domain/repositories/i_client_repository.dart';
 import 'package:proyecto_clase/domain/repositories/i_user_repository.dart';
 import 'package:proyecto_clase/domain/repositories/i_report_repository.dart';
 
-void main() {
+Future<List<Box>> _openBox() async {
+  final directory = await getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
+  List<Box> boxList = [];
+  await Hive.initFlutter();
+  Hive.registerAdapter(ReportDbAdapter());
+  boxList.add(await Hive.openBox('reportsDb'));
+  boxList.add(await Hive.openBox('reportsDbOffline'));
+  logInfo("Box opened reportsDb ${await Hive.boxExists('reportsDb')}");
+  logInfo(
+      "Box opened reportsDbOffline ${await Hive.boxExists('reportsDbOffline')}");
+  return boxList;
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Loggy.initLoggy(logPrinter: const PrettyPrinter(showColors: true));
+  await _openBox;
   Get.put<IClientDataSource>(ClientDataSource());
   Get.put<IClientRepository>(ClientRepository(Get.find()));
   Get.put(ClientUseCase(Get.find()));
@@ -45,11 +71,15 @@ void main() {
   Get.put(UserUseCase(Get.find()));
   Get.put(SupportController());
 
+  Get.put(NetworkInfo());
   Get.put<IReportDataSource>(ReportDataSource());
-  Get.put<IReportRepository>(ReportRepository(Get.find()));
+  Get.put<IReportLocalDataSource>(ReportLocalDatasource());
+  Get.put<IReportRepository>(
+      ReportRepository(Get.find(), Get.find(), Get.find()));
   Get.put(ReportUseCase(Get.find()));
+  Get.put(ConnectivityController());
   Get.put(ReportController());
-  
+
   runApp(const MyApp());
 }
 
@@ -60,7 +90,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     precacheImage(const AssetImage('assets/background.jpg'), context);
 
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Proyecto de Clase',
       debugShowCheckedModeBanner: false,
       initialRoute: '/',

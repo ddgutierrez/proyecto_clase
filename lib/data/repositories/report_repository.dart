@@ -1,27 +1,65 @@
+import 'package:loggy/loggy.dart';
+import 'package:proyecto_clase/data/datasources/local/i_report_local_datasource.dart';
+
 import '../../domain/models/report.dart';
 import '../../domain/repositories/i_report_repository.dart';
+import '../core/network_info.dart';
 import '../datasources/remote/i_report_datasource.dart';
 
 class ReportRepository implements IReportRepository {
   final IReportDataSource _reportDataSource;
+  final IReportLocalDataSource _localDataSource;
+  final NetworkInfo _networkInfo;
 
-  ReportRepository(this._reportDataSource);
+  ReportRepository(
+      this._reportDataSource, this._localDataSource, this._networkInfo);
 
   @override
-  Future<List<Report>> getReports() {
-    return _reportDataSource.getReports();
+  Future<List<Report>> getReports() async {
+    if (await _networkInfo.isConnected()) {
+      logInfo("getReports online");
+      final offlineReports = await _localDataSource.getOfflineReports();
+      if (offlineReports.isNotEmpty) {
+        logInfo("getReports found ${offlineReports.length} offline reports");
+        for (var report in offlineReports) {
+          var rta = await _reportDataSource.addReport(report);
+          if (rta) {
+            await _localDataSource.deleOfflineReport(report);
+          } else {
+            logError("getReports error adding offline report");
+          }
+        }
+      }
+      final reports = await _reportDataSource.getReports();
+      logInfo("getReports online reports: ${reports.length}");
+      await _localDataSource.cacheReports(reports);
+      return reports;
+    }
+    logInfo("getReports offline");
+    return await _localDataSource.getCachedReports() +
+        await _localDataSource.getOfflineReports();
   }
 
   @override
-  Future<bool> addReport(Report report) {
-    return _reportDataSource.addReport(report);
+  Future<bool> addReport(Report report) async {
+    if (await _networkInfo.isConnected()) {
+      await _reportDataSource.addReport(report);
+    } else {
+      await _localDataSource.addOfflineReport(report);
+    }
+    return true;
   }
 
   @override
-  Future<bool> updateReport(int reportId, int reviewScore) {
-    return _reportDataSource.updateReport(reportId, reviewScore);
+  Future<bool> updateReport(int reportId, int reviewScore) async {
+    if (await _networkInfo.isConnected()) {
+      await _reportDataSource.updateReport(reportId, reviewScore);
+    } else {
+      return false;
+    }
+    return true;
   }
-  
+
   @override
   Future<List<Report>> getReportsBySupportUser(int supportUserId) {
     return _reportDataSource.getReportsBySupportUser(supportUserId);
