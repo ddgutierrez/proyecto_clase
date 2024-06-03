@@ -91,9 +91,22 @@ class ReportLocalDatasource implements IReportLocalDataSource {
   }
 
   @override
-  Future<List<Report>> getReportsBySupportUser(int supportUserId) {
-    // TODO: implement getReportsBySupportUser
-    throw UnimplementedError();
+  Future<List<Report>> getReportsBySupportUser(int supportUserId) async {
+    logInfo(
+        'get ${Hive.box('reportsDbOffline').values.length} OfflineReports by user $supportUserId');
+    return Hive.box('reportsDbOffline')
+        .values
+        .where((report) => report.supportUser == supportUserId)
+        .map((entry) => Report(
+            report: entry.report,
+            id: entry.id,
+            review: entry.review,
+            revised: entry.revised,
+            duration: entry.duration,
+            startTime: entry.startTime,
+            supportUser: entry.supportUser,
+            clientName: entry.clientName))
+        .toList();
   }
 
   @override

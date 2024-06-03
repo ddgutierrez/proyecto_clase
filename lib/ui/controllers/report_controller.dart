@@ -34,9 +34,6 @@ class ReportController extends GetxController with UiLoggy {
   Future<bool> createReport(Report report) async {
     try {
       final success = await reportUseCase.addReport(report);
-      if (success) {
-        getReports();
-      }
       return success;
     } catch (e) {
       logError('Failed to create report', e);

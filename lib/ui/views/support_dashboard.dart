@@ -15,7 +15,7 @@ class SupportDashboard extends StatelessWidget {
     final ClientController clientController = Get.find<ClientController>();
 
     reportController.getReportsBySupportUser(int.parse(id));
-    clientController.getClients();  // Ensure clients are fetched
+    clientController.getClients(); // Ensure clients are fetched
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +26,8 @@ class SupportDashboard extends StatelessWidget {
             key: const Key('ButtonLogOut'),
             icon: const Icon(Icons.exit_to_app),
             tooltip: 'Logout',
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                context, '/', (route) => false),
           ),
         ],
       ),
@@ -40,10 +41,12 @@ class SupportDashboard extends StatelessWidget {
             itemCount: reportController.reports.length,
             itemBuilder: (context, index) {
               final report = reportController.reports[index];
-              final formattedDateTime = DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.parse(report.startTime)); // Format the date and time
+              final formattedDateTime = DateFormat('yyyy-MM-dd – kk:mm').format(
+                  DateTime.parse(report.startTime)); // Format the date and time
               return ListTile(
                 title: Text(report.report),
-                subtitle: Text('Start Time: $formattedDateTime, Duration: ${report.duration} hours, Revised: ${report.revised}, Review: ${report.review}, Client: ${report.clientName}'),
+                subtitle: Text(
+                    'Start Time: $formattedDateTime, Duration: ${report.duration} hours, Revised: ${report.revised}, Review: ${report.review}, Client: ${report.clientName}'),
               );
             },
           );
@@ -51,18 +54,23 @@ class SupportDashboard extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => showAddReportDialog(context, reportController, clientController, int.parse(id)),
+        onPressed: () => showAddReportDialog(
+            context, reportController, clientController, int.parse(id)),
       ),
     );
   }
 
-  void showAddReportDialog(BuildContext context, ReportController reportController, ClientController clientController, int userId) {
+  void showAddReportDialog(
+      BuildContext context,
+      ReportController reportController,
+      ClientController clientController,
+      int userId) {
     showDialog(
       context: context,
       builder: (context) {
         final _formKey = GlobalKey<FormState>();
         String reportDesc = '';
-        String? clientName;  // Ensure clientName is nullable
+        String? clientName; // Ensure clientName is nullable
         DateTime? selectedDateTime;
         String duration = '';
 
@@ -77,8 +85,10 @@ class SupportDashboard extends StatelessWidget {
                   children: [
                     TextFormField(
                       onChanged: (value) => reportDesc = value,
-                      decoration: const InputDecoration(labelText: 'Descripcion del informe'),
-                      validator: (value) => value!.isEmpty ? 'Field required' : null,
+                      decoration: const InputDecoration(
+                          labelText: 'Descripcion del informe'),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Field required' : null,
                     ),
                     Obx(() {
                       if (clientController.clients.isEmpty) {
@@ -97,8 +107,10 @@ class SupportDashboard extends StatelessWidget {
                               clientName = value;
                             });
                           },
-                          decoration: const InputDecoration(labelText: 'Nombre del cliente'),
-                          validator: (value) => value == null ? 'Field required' : null,
+                          decoration: const InputDecoration(
+                              labelText: 'Nombre del cliente'),
+                          validator: (value) =>
+                              value == null ? 'Field required' : null,
                         );
                       }
                     }),
@@ -134,12 +146,15 @@ class SupportDashboard extends StatelessWidget {
                             ? 'Fecha y hora de inicio'
                             : 'Fecha y hora de inicio: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedDateTime!)}',
                       ),
-                      validator: (value) => selectedDateTime == null ? 'Field required' : null,
+                      validator: (value) =>
+                          selectedDateTime == null ? 'Field required' : null,
                     ),
                     TextFormField(
                       onChanged: (value) => duration = value,
-                      decoration: const InputDecoration(labelText: 'Tiempo de duracion (horas)'),
-                      validator: (value) => value!.isEmpty ? 'Field required' : null,
+                      decoration: const InputDecoration(
+                          labelText: 'Tiempo de duracion (horas)'),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Field required' : null,
                       keyboardType: TextInputType.number,
                     ),
                   ],
@@ -149,7 +164,8 @@ class SupportDashboard extends StatelessWidget {
                 TextButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      String formattedDateTime = selectedDateTime!.toIso8601String();
+                      String formattedDateTime =
+                          selectedDateTime!.toIso8601String();
                       Report newReport = Report(
                         report: reportDesc,
                         review: 0,
@@ -159,12 +175,16 @@ class SupportDashboard extends StatelessWidget {
                         supportUser: userId,
                         clientName: clientName!,
                       );
-                      bool isCreated = await reportController.createReport(newReport);
-                      Navigator.of(context).pop();
+                      bool isCreated =
+                          await reportController.createReport(newReport);
+                      Get.back();
                       if (!isCreated) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to create report")));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Failed to create report")));
                       } else {
-                        reportController.getReportsBySupportUser(userId);  // Fetch reports only for the specific support user
+                        reportController.getReportsBySupportUser(
+                            userId); // Fetch reports only for the specific support user
                       }
                     }
                   },

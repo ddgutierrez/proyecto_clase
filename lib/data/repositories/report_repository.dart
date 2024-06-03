@@ -61,7 +61,35 @@ class ReportRepository implements IReportRepository {
   }
 
   @override
-  Future<List<Report>> getReportsBySupportUser(int supportUserId) {
-    return _reportDataSource.getReportsBySupportUser(supportUserId);
+  Future<List<Report>> getReportsBySupportUser(int supportUserId) async {
+    if (await _networkInfo.isConnected()) {
+      logInfo("getReportsByUser online");
+      final offlineReports =
+          await _localDataSource.getReportsBySupportUser(supportUserId);
+      if (offlineReports.isNotEmpty) {
+        logInfo(
+            "getReportsByUser found ${offlineReports.length} offline reports");
+        for (var report in offlineReports) {
+          var rta = await _reportDataSource.addReport(report);
+          if (rta) {
+            await _localDataSource.deleteOfflineReport(report);
+          } else {
+            logError("getReportsByUser error adding offline report");
+          }
+        }
+      }
+      final reports =
+          await _reportDataSource.getReportsBySupportUser(supportUserId);
+      logInfo("getReportsByUser online reports: ${reports.length}");
+      await _localDataSource.cacheReports(reports);
+      return reports;
+    }
+    logInfo("getReportsByUser offline");
+    final localOnly = await _localDataSource.getOfflineReports();
+    return await _localDataSource.getCachedReports() +
+        localOnly
+            .where((report) => report.supportUser == supportUserId)
+            .toList();
+    //return _reportDataSource.getReportsBySupportUser(supportUserId);
   }
 }
