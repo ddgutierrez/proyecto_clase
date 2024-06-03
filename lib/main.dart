@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:loggy/loggy.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:proyecto_clase/data/core/network_info.dart';
 import 'package:proyecto_clase/data/datasources/local/i_report_local_datasource.dart';

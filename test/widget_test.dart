@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:proyecto_clase/data/datasources/remote/i_user_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/user_datasource.dart';
+import 'package:proyecto_clase/data/repositories/user_repository.dart';
+import 'package:proyecto_clase/domain/repositories/i_user_repository.dart';
+import 'package:proyecto_clase/domain/use_case/user_usecase.dart';
+import 'package:proyecto_clase/ui/controllers/support_controller.dart';
 import 'package:proyecto_clase/ui/views/coordinator_dashboard.dart';
 import 'package:proyecto_clase/ui/views/login_screen.dart';
 
 void main() {
+  setUp(() {
+    Get.put<IUserDataSource>(UserDataSource());
+    Get.put<IUserRepository>(UserRepository(Get.find()));
+    Get.put(UserUseCase(Get.find()));
+    Get.put(SupportController());
+  });
+
   testWidgets('Widget login autenticación fallida',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(
+    await tester.pumpWidget(const GetMaterialApp(
         home: LoginScreen(
       key: Key('LoginScreen'),
     )));
@@ -27,7 +41,7 @@ void main() {
   });
   testWidgets('Widget login autenticación exitosa coordinador',
       (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(GetMaterialApp(
       title: 'Proyecto de Clase',
       initialRoute: '/',
       routes: {
