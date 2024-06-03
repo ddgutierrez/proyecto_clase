@@ -44,8 +44,6 @@ import 'package:proyecto_clase/domain/repositories/i_user_repository.dart';
 import 'package:proyecto_clase/domain/repositories/i_report_repository.dart';
 
 Future<List<Box>> _openBox() async {
-  final directory = await getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
   List<Box> boxList = [];
   await Hive.initFlutter();
   Hive.registerAdapter(ReportDbAdapter());
