@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       // Show error message if authentication fails
       final snackBar =
-          SnackBar(content: Text('Invalid credentials! Please try again.'));
+          const SnackBar(content: Text('Invalid credentials! Please try again.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }

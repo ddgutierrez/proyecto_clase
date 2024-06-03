@@ -118,9 +118,9 @@ class MyApp extends StatelessWidget {
     return MaterialPageRoute(builder: (context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Error'),
+          title: const Text('Error'),
         ),
-        body: Center(
+        body: const Center(
           child: Text('Page not found!'),
         ),
       );

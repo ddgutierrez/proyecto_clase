@@ -20,11 +20,11 @@ class _DashboardState extends State<CoordinatorDashboard> {
     switch (index) {
       case 0:
         {
-          return ClientManagement();
+          return const ClientManagement();
         }
       case 1:
         {
-          return UserSupportManagement();
+          return const UserSupportManagement();
         }
       case 2:
         {
@@ -32,7 +32,7 @@ class _DashboardState extends State<CoordinatorDashboard> {
         }
       case 3:
         {
-          return ReportManagement();
+          return const ReportManagement();
         }
       case 4:
         {
@@ -40,7 +40,7 @@ class _DashboardState extends State<CoordinatorDashboard> {
         }
       default:
         {
-          return ClientManagement();
+          return const ClientManagement();
         }
     }
   }
