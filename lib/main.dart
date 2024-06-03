@@ -60,7 +60,7 @@ Future<List<Box>> _openBox() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Loggy.initLoggy(logPrinter: const PrettyPrinter(showColors: true));
-  await _openBox;
+  await _openBox();
   Get.put<IClientDataSource>(ClientDataSource());
   Get.put<IClientRepository>(ClientRepository(Get.find()));
   Get.put(ClientUseCase(Get.find()));
