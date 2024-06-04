@@ -43,30 +43,35 @@ void main() {
   });
   test("Testing Users Datasource add", () async {
     final uri = Uri.parse("https://retoolapi.dev/$apiKey/user_support");
+    UserSupport userSupport = UserSupport(
+        id: "9999", name: "foo", email: "foo@mail.com", password: "852852");
     when(mockClient.post(uri,
             headers: {"Content-Type": "application/json; charset=UTF-8"},
-            body: anyNamed("body")))
+            body: jsonEncode(userSupport.toJson())))
         .thenAnswer((_) async => http.Response("", 201));
-    final result = await userDataSource.addUser(UserSupport(
-        id: '9999', name: "foo", email: "foo@mail.com", password: "852852"));
+    final result = await userDataSource.addUser(userSupport);
     expect(result, isTrue);
   });
   test("Testing Users Datasource update", () async {
     final uri = Uri.parse("https://retoolapi.dev/$apiKey/user_support/$id");
+    UserSupport userSupport = UserSupport(
+        id: id.toString(),
+        name: "foo",
+        email: "foo@mail.com",
+        password: "852852");
     when(mockClient.put(uri,
             headers: {"Content-Type": "application/json; charset=UTF-8"},
-            body: anyNamed("body")))
+            body: jsonEncode(userSupport.toJson())))
         .thenAnswer((_) async => http.Response("", 200));
-    final result = await userDataSource.updateUser(UserSupport(
-        id: '9999', name: "foo", email: "foo@mail.com", password: "123123"));
+    final result = await userDataSource.updateUser(userSupport);
     expect(result, isTrue);
   });
   test("Testing Users Datasource delete", () async {
     final uri = Uri.parse("https://retoolapi.dev/$apiKey/user_support/$id");
-    when(mockClient.delete(uri,
-            headers: {"Content-Type": "application/json; charset=UTF-8"},
-            body: anyNamed("body")))
-        .thenAnswer((_) async => http.Response("", 200));
+    when(mockClient.delete(
+      uri,
+      headers: {"Content-Type": "application/json; charset=UTF-8"},
+    )).thenAnswer((_) async => http.Response("", 200));
     final result = await userDataSource.deleteUser(id);
     expect(result, isTrue);
   });
