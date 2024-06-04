@@ -82,10 +82,10 @@ class _DashboardState extends State<CoordinatorDashboard> {
                   icon: Icon(Icons.rate_review),
                   label: Text('Evaluar Reportes')),
               NavigationRailDestination(
-                  icon: Icon(Icons.report), 
+                  icon: Icon(Icons.report),
                   label: Text('Administrar Reportes')),
               NavigationRailDestination(
-                  icon: Icon(Icons.assessment), 
+                  icon: Icon(Icons.assessment),
                   label: Text('Estadisticas de Usuarios\nde Soporte'))
             ],
             selectedIndex: _selectedIndex,
@@ -129,13 +129,13 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
               title: const Text('Add User',
                   style: TextStyle(color: Colors.deepPurple)),
               children: [
-                buildTextField(addNameController, 'Name'),
+                buildTextField(addNameController, 'Nombre'),
                 buildTextField(addEmailController, 'Email'),
-                buildTextField(addPasswordController, 'Password',
+                buildTextField(addPasswordController, 'Contraseña',
                     isPassword: true),
                 ElevatedButton(
                   onPressed: addSupportUser,
-                  child: const Text('Save User'),
+                  child: const Text('Crear Usuario de Soporte'),
                 ),
               ],
             ),
@@ -177,7 +177,7 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
       clearAddFields();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add user')),
+        const SnackBar(content: Text('Error al crear usuario de soporte')),
       );
     }
   }
@@ -191,22 +191,22 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit User'),
+          title: const Text('Editar Usuario'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              buildTextField(addNameController, 'Name',
+              buildTextField(addNameController, 'Nombre',
                   initialValue: user.name),
               buildTextField(addEmailController, 'Email',
                   initialValue: user.email),
-              buildTextField(addPasswordController, 'Password',
+              buildTextField(addPasswordController, 'Contraseña',
                   isPassword: true),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
@@ -222,11 +222,11 @@ class _UserSupportManagementState extends State<UserSupportManagement> {
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to update user')),
+                    const SnackBar(content: Text('Error al editar usuario de soporte')),
                   );
                 }
               },
-              child: const Text('Save Changes'),
+              child: const Text('Guardar Cambios'),
             ),
           ],
         );
@@ -275,7 +275,7 @@ class _ClientManagementState extends State<ClientManagement> {
           (existingClient) => existingClient.name == addNameController.text);
       if (exists) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Client already exists')));
+            const SnackBar(content: Text('Cliente ya existe')));
         return;
       }
 
@@ -287,42 +287,14 @@ class _ClientManagementState extends State<ClientManagement> {
       addNameController.clear();
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Client added successfully')));
+            const SnackBar(content: Text('Cliente creado exitosamente')));
         setState(() {
           selectedClient = null;
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to add client')));
+            const SnackBar(content: Text('Error al crear cliente')));
       }
-    }
-  }
-
-  Future<void> updateSelectedClient() async {
-    if (selectedClient != null && editNameController.text.isNotEmpty) {
-      Client updatedClient = Client(
-        id: selectedClient!.id,
-        name: editNameController.text,
-      );
-      bool success = await clientController.updateClient(updatedClient);
-      editNameController.clear();
-      if (success) {
-        setState(() {
-          selectedClient = null;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to update client')));
-      }
-    }
-  }
-
-  Future<void> deleteSelectedClient() async {
-    if (selectedClient != null) {
-      await clientController.deleteClient(int.parse(selectedClient!.id));
-      setState(() {
-        selectedClient = null;
-      });
     }
   }
 
@@ -331,13 +303,13 @@ class _ClientManagementState extends State<ClientManagement> {
     return Obx(() => ListView(
           padding: const EdgeInsets.all(8.0),
           children: [
-                        ExpansionTile(
-              title: const Text('Add Client',
+            ExpansionTile(
+              title: const Text('Agregar Cliente',
                   style: TextStyle(color: Colors.deepPurple)),
               children: [
-                buildTextField(addNameController, 'Name'),
+                buildTextField(addNameController, 'Nombre'),
                 ElevatedButton(
-                    onPressed: addClient, child: const Text('Save Client')),
+                    onPressed: addClient, child: const Text('Guardar Cliente')),
               ],
             ),
             for (var client in clientController.clients)
@@ -352,8 +324,22 @@ class _ClientManagementState extends State<ClientManagement> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () =>
-                          clientController.deleteClient(int.parse(client.id)),
+                      onPressed: () async {
+                        bool success = await clientController
+                            .deleteClient(int.parse(client.id));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(success
+                                ? 'Cliente borrado exitosamente'
+                                : 'Error borrando cliente'),
+                          ),
+                        );
+                        if (success) {
+                          setState(() {
+                            // Update UI or perform any other necessary actions
+                          });
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -369,33 +355,35 @@ class _ClientManagementState extends State<ClientManagement> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Client'),
+          title: const Text('Editar Cliente'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              buildTextField(editNameController, 'Name'),
+              buildTextField(editNameController, 'Nombre'),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
                 final updatedClient = client.copyWith(
                   name: editNameController.text,
                 );
-                final success = await clientController.updateClient(updatedClient);
+                final success =
+                    await clientController.updateClient(updatedClient);
                 if (success) {
+                  const SnackBar(content: Text('Cliente editado exitosamente'));
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to update client')),
+                    const SnackBar(content: Text('Error al editar el cliente')),
                   );
                 }
               },
-              child: const Text('Save Changes'),
+              child: const Text('Guardar cambios'),
             ),
           ],
         );
@@ -412,7 +400,6 @@ class _ClientManagementState extends State<ClientManagement> {
     );
   }
 }
-
 
 class WorkReportEvaluation extends StatelessWidget {
   WorkReportEvaluation({Key? key}) : super(key: key);
@@ -441,93 +428,89 @@ class WorkReportEvaluation extends StatelessWidget {
                   'No hay reportes por revisar',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 )
-              else
-                ...[
-                  DropdownButtonFormField<Report>(
-                    isExpanded: true,
-                    hint: const Text("Seleccione un Informe"),
-                    value: selectedReport.value,
-                    items: reportController.reports
-                        .where((report) => !report.revised)
-                        .map((report) {
-                      return DropdownMenuItem<Report>(
-                        value: report,
-                        child: Text("Report ID: ${report.id}"),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        selectedReport.value = value;
-                        _currentRating = value.review.toDouble();
-                      }
-                    },
-                    decoration: const InputDecoration(
-                      labelText: 'Informe',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) =>
-                        value == null ? 'Seleccione un informe' : null,
+              else ...[
+                DropdownButtonFormField<Report>(
+                  isExpanded: true,
+                  hint: const Text("Seleccione un Informe"),
+                  value: selectedReport.value,
+                  items: reportController.reports
+                      .where((report) => !report.revised)
+                      .map((report) {
+                    return DropdownMenuItem<Report>(
+                      value: report,
+                      child: Text("Report ID: ${report.id}"),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedReport.value = value;
+                      _currentRating = value.review.toDouble();
+                    }
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Informe',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null ? 'Seleccione un informe' : null,
+                ),
+                const SizedBox(height: 16),
+                if (selectedReport.value != null) ...[
+                  buildReportDetail('Reporte', selectedReport.value!.report),
+                  buildReportDetail(
+                      'Duración', '${selectedReport.value!.duration} horas'),
+                  buildReportDetail(
+                      'Cliente', selectedReport.value!.clientName),
+                  buildReportDetail(
+                      'Fecha y Hora de Inicio',
+                      DateFormat('yyyy-MM-dd – kk:mm').format(
+                          DateTime.parse(selectedReport.value!.startTime))),
+                  buildReportDetail('Usuario de Soporte',
+                      selectedReport.value!.supportUser.toString()),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Evaluación',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  if (selectedReport.value != null) ...[
-                    buildReportDetail('Reporte', selectedReport.value!.report),
-                    buildReportDetail(
-                        'Duración', '${selectedReport.value!.duration} horas'),
-                    buildReportDetail(
-                        'Cliente', selectedReport.value!.clientName),
-                    buildReportDetail(
-                        'Fecha y Hora de Inicio',
-                        DateFormat('yyyy-MM-dd – kk:mm').format(
-                            DateTime.parse(selectedReport.value!.startTime))),
-                    buildReportDetail('Usuario de Soporte',
-                        selectedReport.value!.supportUser.toString()),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Evaluación',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: RatingBar.builder(
-                        initialRating: _currentRating,
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: true,
-                        itemCount: 5,
-                        itemPadding:
-                            const EdgeInsets.symmetric(horizontal: 4.0),
-                        itemBuilder: (context, _) =>
-                            const Icon(Icons.star, color: Colors.amber),
-                        onRatingUpdate: (rating) {
+                  Center(
+                    child: RatingBar.builder(
+                      initialRating: _currentRating,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) =>
+                          const Icon(Icons.star, color: Colors.amber),
+                      onRatingUpdate: (rating) {
                           _currentRating = rating;
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (selectedReport.value != null) {
-                          reportController.updateReport(
-                              selectedReport.value!.id!,
-                              _currentRating.round());
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Revisión enviada!')),
-                          );
-                          // Clear the selected report after submission
-                          selectedReport.value = null;
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Seleccione un informe')),
-                          );
-                        }
                       },
-                      child: const Text('Enviar Revisión'),
-                    )
-                  ]
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (selectedReport.value != null) {
+                        reportController.updateReport(
+                            selectedReport.value!.id!, _currentRating.round());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Revisión enviada!')),
+                        );
+                        // Clear the selected report after submission
+                        selectedReport.value = null;
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Seleccione un informe')),
+                        );
+                      }
+                    },
+                    child: const Text('Enviar Revisión'),
+                  )
                 ]
+              ]
             ],
           ),
         ));
@@ -584,7 +567,7 @@ class _ReportManagementState extends State<ReportManagement> {
                       child: DropdownButton<Client>(
                         isExpanded: true,
                         value: selectedClient,
-                        hint: const Text('Select a Client'),
+                        hint: const Text('Seleccionar un Cliente'),
                         onChanged: (Client? newValue) {
                           setState(() {
                             selectedClient = newValue;
@@ -605,7 +588,7 @@ class _ReportManagementState extends State<ReportManagement> {
                           selectedClient = null;
                         });
                       },
-                      child: const Text('Clear Filter'),
+                      child: const Text('Borrar Filtro'),
                     ),
                   ],
                 ),
@@ -619,7 +602,8 @@ class _ReportManagementState extends State<ReportManagement> {
                         report.clientName == selectedClient!.name)
                     .map((report) {
                   final formattedDateTime = DateFormat('yyyy-MM-dd – kk:mm')
-                      .format(DateTime.parse(report.startTime)); // Format the date and time
+                      .format(DateTime.parse(
+                          report.startTime)); // Format the date and time
                   return Card(
                     margin: const EdgeInsets.symmetric(
                         vertical: 5.0, horizontal: 10.0),
@@ -633,7 +617,8 @@ class _ReportManagementState extends State<ReportManagement> {
                           Text('Duracion: ${report.duration} horas'),
                           Text('Hora de inicio: $formattedDateTime'),
                           Text('Nombre del cliente: ${report.clientName}'),
-                          Text('ID de usuario de soporte: ${report.supportUser}'),
+                          Text(
+                              'ID de usuario de soporte: ${report.supportUser}'),
                           if (report.revised == false && report.review == 0)
                             const Text(
                               'Debe realizarse revision',
@@ -666,7 +651,8 @@ class SupportUserStats extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final users = supportController.users;
-      final reports = reportController.reports.where((report) => report.revised).toList();
+      final reports =
+          reportController.reports.where((report) => report.revised).toList();
 
       return ListView.builder(
         padding: const EdgeInsets.all(8.0),
@@ -674,25 +660,30 @@ class SupportUserStats extends StatelessWidget {
         itemBuilder: (context, index) {
           final user = users[index];
           int userId;
-          
+
           // Ensure user ID is correctly parsed
           try {
             userId = int.parse(user.id);
           } catch (e) {
             return Card(
-              margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
               child: ListTile(
                 title: Text(user.name),
                 subtitle: const Text('Error parsing user ID'),
               ),
             );
           }
-          
-          final userReports = reports.where((report) => report.supportUser == userId).toList();
+
+          final userReports =
+              reports.where((report) => report.supportUser == userId).toList();
           final reportCount = userReports.length;
           final averageReview = userReports.isEmpty
               ? 0.0
-              : userReports.map((report) => report.review).reduce((a, b) => a + b) / reportCount;
+              : userReports
+                      .map((report) => report.review)
+                      .reduce((a, b) => a + b) /
+                  reportCount;
 
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
@@ -702,7 +693,8 @@ class SupportUserStats extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Cantidad de reportes: $reportCount'),
-                  Text('Calificacion promedio: ${averageReview.toStringAsFixed(1)}'),
+                  Text(
+                      'Calificacion promedio: ${averageReview.toStringAsFixed(1)}'),
                 ],
               ),
             ),

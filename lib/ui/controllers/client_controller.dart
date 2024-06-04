@@ -47,11 +47,12 @@ class ClientController extends GetxController {
     return success; // Return the success status
   }
 
-  Future<void> deleteClient(int id) async {
+  Future<bool> deleteClient(int id) async {
     logInfo("Delete client id $id");
     bool success = await clientUseCase.deleteClient(id);
     if (success) {
       getClients();
     }
+    return success;
   }
 }
