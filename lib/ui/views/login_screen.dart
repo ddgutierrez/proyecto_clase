@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              labelText: 'Password',
+                              labelText: 'Contraseña',
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
                                 icon: Icon(_isPasswordVisible
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 50, vertical: 15),
                             ),
-                            child: const Text('Login'),
+                            child: const Text('Iniciar Sesion'),
                           ),
                           const SizedBox(height: 20),
                           TextButton(

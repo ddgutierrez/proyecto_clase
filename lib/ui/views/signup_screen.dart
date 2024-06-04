@@ -31,7 +31,7 @@ class _SignupScreenState extends State<SignupScreen> {
               TextField(
                 key: const Key('TextFieldSignUpName'),
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Nombre'),
               ),
               TextField(
                 key: const Key('TextFieldSignUpEmail'),
@@ -41,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
               TextField(
                 key: const Key('TextFieldSignUpPassword'),
                 controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Contraseña'),
                 obscureText: true,
               ),
               const SizedBox(height: 20),
