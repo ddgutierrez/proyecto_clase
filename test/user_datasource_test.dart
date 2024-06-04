@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
@@ -74,5 +73,20 @@ void main() {
     )).thenAnswer((_) async => http.Response("", 200));
     final result = await userDataSource.deleteUser(id);
     expect(result, isTrue);
+  });
+  test("Testing Users Datasource findByEmail", () async {
+    final uri = Uri.parse("https://retoolapi.dev/$apiKey/user_support");
+    when(mockClient.get(uri, headers: {'Content-Type': 'application/json'}))
+        .thenAnswer((_) async => http.Response(getString, 200));
+    final result = await userDataSource.findUserByEmail("email@example.com");
+    expect(result, isNotNull);
+  });
+  test("Testing Users Datasource validateCredentials", () async {
+    final uri = Uri.parse("https://retoolapi.dev/$apiKey/user_support");
+    when(mockClient.get(uri, headers: {'Content-Type': 'application/json'}))
+        .thenAnswer((_) async => http.Response(getString, 200));
+    final result = await userDataSource.validateCredentials(
+        "email@example.com", "guessthepassword");
+    expect(result, isNotNull);
   });
 }
