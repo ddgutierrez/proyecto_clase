@@ -33,6 +33,7 @@ import 'package:proyecto_clase/ui/controllers/connectivity_controller.dart';
 import 'package:proyecto_clase/ui/controllers/coordinator_controller.dart';
 import 'package:proyecto_clase/ui/controllers/report_controller.dart';
 import 'package:proyecto_clase/ui/controllers/support_controller.dart';
+import 'package:proyecto_clase/ui/views/support_dashboard.dart';
 
 /*Future<List<Box>> _openBox() async {
   List<Box> boxList = [];
@@ -115,6 +116,37 @@ void main() {
 
     await tester.pumpAndSettle(Durations.extralong4);
 
+    expect(find.byKey(const Key('LoginScreen')), findsOneWidget);
+  });
+  testWidgets("Login -> Support Dashboard -> logout", (WidgetTester tester) async {
+    Widget w = await createHomeScreen();
+    await tester.pumpWidget(w);
+
+    // Ensure the initial route is displayed
+    expect(find.byKey(const Key('LoginScreen')), findsOneWidget);
+
+    // Perform login
+    await tester.enterText(
+        find.byKey(const Key('TextFormFieldLoginEmail')), 'test@test.com');
+    await tester.enterText(
+        find.byKey(const Key('TextFormFieldLoginPassword')), 'password');
+
+    await tester.tap(find.byKey(const Key('ButtonLoginSubmit')));
+
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    // Verify that we are on the Support Dashboard
+    expect(find.byType(SupportDashboard), findsOneWidget);
+
+    // Wait for the reports to load
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    // Logout
+    await tester.tap(find.byKey(const Key('ButtonLogOut')));
+
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    // Verify that we are back on the login screen
     expect(find.byKey(const Key('LoginScreen')), findsOneWidget);
   });
 }

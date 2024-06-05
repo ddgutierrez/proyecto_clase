@@ -36,7 +36,7 @@ class SupportDashboard extends StatelessWidget {
         if (reportController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         } else if (reportController.reports.isEmpty) {
-          return const Center(child: Text('No reports available for review.'));
+          return const Center(child: Text('No hay reportes para mostrar'));
         } else {
           return ListView.builder(
             itemCount: reportController.reports.length,
@@ -47,7 +47,7 @@ class SupportDashboard extends StatelessWidget {
               return ListTile(
                 title: Text(report.report),
                 subtitle: Text(
-                    'Start Time: $formattedDateTime, Duration: ${report.duration} hours, Revised: ${report.revised}, Review: ${report.review}, Client: ${report.clientName}'),
+                    'Fecha y Hora de Inicio: $formattedDateTime, Duracion: ${report.duration} horas, Revisado: ${report.revised}, Calificacion: ${report.review}, Cliente: ${report.clientName}'),
               );
             },
           );
@@ -81,86 +81,95 @@ class SupportDashboard extends StatelessWidget {
             return AlertDialog(
               title: Text(
                   'Crear Nuevo Reporte${!connectivityController.connection ? '\n(Modo Offline)' : ''}'),
-              content: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      onChanged: (value) => reportDesc = value,
-                      decoration: const InputDecoration(
-                          labelText: 'Descripcion del informe'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Campo Requerido' : null,
-                    ),
-                    Obx(() {
-                      if (clientController.clients.isEmpty) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else {
-                        return DropdownButtonFormField<String>(
-                          value: clientName,
-                          items: clientController.clients.map((client) {
-                            return DropdownMenuItem<String>(
-                              value: client.name,
-                              child: Text(client.name),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              clientName = value;
-                            });
-                          },
+              content: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.6,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          onChanged: (value) => reportDesc = value,
                           decoration: const InputDecoration(
-                              labelText: 'Nombre del cliente'),
+                              labelText: 'Descripcion del informe'),
                           validator: (value) =>
-                              value == null ? 'Campo Requerido' : null,
-                        );
-                      }
-                    }),
-                    TextFormField(
-                      readOnly: true,
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2101),
-                        );
-                        if (pickedDate != null) {
-                          TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          );
-                          if (pickedTime != null) {
-                            setState(() {
-                              selectedDateTime = DateTime(
-                                pickedDate.year,
-                                pickedDate.month,
-                                pickedDate.day,
-                                pickedTime.hour,
-                                pickedTime.minute,
-                              );
-                            });
+                              value!.isEmpty ? 'Campo Requerido' : null,
+                        ),
+                        Obx(() {
+                          if (clientController.clients.isEmpty) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else {
+                            return DropdownButtonFormField<String>(
+                              value: clientName,
+                              items: clientController.clients.map((client) {
+                                return DropdownMenuItem<String>(
+                                  value: client.name,
+                                  child: Text(client.name),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  clientName = value;
+                                });
+                              },
+                              decoration: const InputDecoration(
+                                  labelText: 'Nombre del cliente'),
+                              validator: (value) =>
+                                  value == null ? 'Campo Requerido' : null,
+                            );
                           }
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: selectedDateTime == null
-                            ? 'Fecha y hora de inicio'
-                            : 'Fecha y hora de inicio: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedDateTime!)}',
-                      ),
-                      validator: (value) =>
-                          selectedDateTime == null ? 'Campo Requerido' : null,
+                        }),
+                        TextFormField(
+                          readOnly: true,
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2101),
+                            );
+                            if (pickedDate != null) {
+                              TimeOfDay? pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              );
+                              if (pickedTime != null) {
+                                setState(() {
+                                  selectedDateTime = DateTime(
+                                    pickedDate.year,
+                                    pickedDate.month,
+                                    pickedDate.day,
+                                    pickedTime.hour,
+                                    pickedTime.minute,
+                                  );
+                                });
+                              }
+                            }
+                          },
+                          decoration: InputDecoration(
+                            labelText: selectedDateTime == null
+                                ? 'Fecha y hora de inicio'
+                                : 'Fecha y hora de inicio: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedDateTime!)}',
+                          ),
+                          validator: (value) => selectedDateTime == null
+                              ? 'Campo Requerido'
+                              : null,
+                        ),
+                        TextFormField(
+                          onChanged: (value) => duration = value,
+                          decoration: const InputDecoration(
+                              labelText: 'Tiempo de duracion (horas)'),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo Requerido' : null,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
                     ),
-                    TextFormField(
-                      onChanged: (value) => duration = value,
-                      decoration: const InputDecoration(
-                          labelText: 'Tiempo de duracion (horas)'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Campo Requerido' : null,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ],
+                  ),
                 ),
               ),
               actions: [
