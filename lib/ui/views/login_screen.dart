@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              labelText: 'Password',
+                              labelText: 'Contraseña',
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
                                 icon: Icon(_isPasswordVisible
@@ -117,14 +117,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 50, vertical: 15),
                             ),
-                            child: const Text('Login'),
+                            child: const Text('Iniciar Sesion'),
                           ),
                           const SizedBox(height: 20),
                           TextButton(
                             key: const Key('ButtonLoginRegister'),
                             onPressed: () =>
                                 Navigator.pushNamed(context, '/signup'),
-                            child: const Text('Sign Up for Support'),
+                            child: const Text('Registro Support'),
                           )
                         ])),
                   ],
@@ -152,8 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
           );
     } else {
       // Show error message if authentication fails
-      final snackBar =
-          const SnackBar(content: Text('Invalid credentials! Please try again.'));
+      final snackBar = const SnackBar(
+          content: Text('Invalid credentials! Please try again.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }

@@ -18,18 +18,22 @@ class ReportRepository implements IReportRepository {
   Future<List<Report>> getReports() async {
     if (await _networkInfo.isConnected()) {
       logInfo("getReports online");
-      final offlineReports = await _localDataSource.getOfflineReports();
+      List<Report> offlineReports = await _localDataSource.getOfflineReports();
       if (offlineReports.isNotEmpty) {
         logInfo("getReports found ${offlineReports.length} offline reports");
         for (var report in offlineReports) {
+          logInfo(report.id);
+          logInfo(report.supportUser);
           var rta = await _reportDataSource.addReport(report);
           if (rta) {
             await _localDataSource.deleteOfflineReport(report);
+            await _localDataSource.popOfflineReport();
           } else {
             logError("getReports error adding offline report");
           }
         }
       }
+      logInfo(offlineReports.length);
       final reports = await _reportDataSource.getReports();
       logInfo("getReports online reports: ${reports.length}");
       await _localDataSource.cacheReports(reports);
