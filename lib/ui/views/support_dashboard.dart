@@ -14,7 +14,7 @@ class SupportDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ReportController reportController = Get.find<ReportController>();
     final ClientController clientController = Get.find<ClientController>();
-    ConnectivityController connectivityController = Get.find();
+
     reportController.getReportsBySupportUser(int.parse(id));
     clientController.getClients(); // Ensure clients are fetched
 
@@ -55,16 +55,8 @@ class SupportDashboard extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          if (!connectivityController.connection) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Modo Offline"),
-              elevation: 10,
-            ));
-          }
-          showAddReportDialog(
-              context, reportController, clientController, int.parse(id));
-        },
+        onPressed: () => showAddReportDialog(
+            context, reportController, clientController, int.parse(id)),
       ),
     );
   }
@@ -85,8 +77,10 @@ class SupportDashboard extends StatelessWidget {
 
         return StatefulBuilder(
           builder: (context, setState) {
+            ConnectivityController connectivityController = Get.find();
             return AlertDialog(
-              title: const Text('Crear Nuevo Reporte'),
+              title: Text(
+                  'Crear Nuevo Reporte${!connectivityController.connection ? '\n(Modo Offline)' : ''}'),
               content: Form(
                 key: _formKey,
                 child: Column(
