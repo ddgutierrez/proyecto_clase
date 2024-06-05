@@ -34,14 +34,14 @@ import 'package:proyecto_clase/ui/controllers/coordinator_controller.dart';
 import 'package:proyecto_clase/ui/controllers/report_controller.dart';
 import 'package:proyecto_clase/ui/controllers/support_controller.dart';
 
-Future<List<Box>> _openBox() async {
+/*Future<List<Box>> _openBox() async {
   List<Box> boxList = [];
   await Hive.initFlutter();
   Hive.registerAdapter(ReportDbAdapter());
   boxList.add(await Hive.openBox('reportsDb'));
   boxList.add(await Hive.openBox('reportsDbOffline'));
   return boxList;
-}
+}*/
 
 /// IMPORTANT NOTE
 /// For reasons beyond me running the integration test on windows requires that
@@ -51,7 +51,7 @@ Future<List<Box>> _openBox() async {
 void main() {
   Future<Widget> createHomeScreen() async {
     WidgetsFlutterBinding.ensureInitialized();
-    await _openBox();
+    //await _openBox();
     Get.put<IClientDataSource>(ClientDataSource());
     Get.put<IClientRepository>(ClientRepository(Get.find()));
     Get.put(ClientUseCase(Get.find()));
@@ -96,6 +96,22 @@ void main() {
     expect(find.byKey(const Key('CDashboard')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('ButtonLogOut')));
+
+    await tester.pumpAndSettle(Durations.extralong4);
+
+    expect(find.byKey(const Key('LoginScreen')), findsOneWidget);
+  });
+  testWidgets("Login -> login failed", (WidgetTester tester) async {
+    Widget w = await createHomeScreen();
+    await tester.pumpWidget(w);
+    expect(find.byKey(const Key('LoginScreen')), findsOneWidget);
+    await tester.enterText(
+        find.byKey(const Key('TextFormFieldLoginEmail')), 'a.com');
+
+    await tester.enterText(
+        find.byKey(const Key('TextFormFieldLoginPassword')), '123456');
+
+    await tester.tap(find.byKey(const Key('ButtonLoginSubmit')));
 
     await tester.pumpAndSettle(Durations.extralong4);
 
