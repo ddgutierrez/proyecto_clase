@@ -47,7 +47,14 @@ class ReportLocalDatasource implements IReportLocalDataSource {
 
   @override
   Future<void> deleteOfflineReport(Report report) async {
-    await Hive.box('reportsDbOffline').delete(report.id);
+    await Hive.box('reportsDbOffline').delete(report);
+    logInfo("now offline has: ${Hive.box('reportsDbOffline').length}");
+  }
+
+  Future<void> popOfflineReport() async {
+    logInfo("Removing one offline report");
+    await Hive.box('reportsDbOffline').deleteAt(0);
+    logInfo("Now offline has: ${Hive.box('reportsDbOffline').length}");
   }
 
   @override
