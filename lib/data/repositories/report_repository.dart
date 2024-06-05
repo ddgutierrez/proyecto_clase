@@ -22,18 +22,14 @@ class ReportRepository implements IReportRepository {
       if (offlineReports.isNotEmpty) {
         logInfo("getReports found ${offlineReports.length} offline reports");
         for (var report in offlineReports) {
-          logInfo(report.id);
-          logInfo(report.supportUser);
           var rta = await _reportDataSource.addReport(report);
           if (rta) {
-            await _localDataSource.deleteOfflineReport(report);
             await _localDataSource.popOfflineReport();
           } else {
             logError("getReports error adding offline report");
           }
         }
       }
-      logInfo(offlineReports.length);
       final reports = await _reportDataSource.getReports();
       logInfo("getReports online reports: ${reports.length}");
       await _localDataSource.cacheReports(reports);
