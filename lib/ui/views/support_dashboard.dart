@@ -97,7 +97,7 @@ class SupportDashboard extends StatelessWidget {
                       decoration: const InputDecoration(
                           labelText: 'Descripcion del informe'),
                       validator: (value) =>
-                          value!.isEmpty ? 'Field required' : null,
+                          value!.isEmpty ? 'Campo Requerido' : null,
                     ),
                     Obx(() {
                       if (clientController.clients.isEmpty) {
@@ -119,7 +119,7 @@ class SupportDashboard extends StatelessWidget {
                           decoration: const InputDecoration(
                               labelText: 'Nombre del cliente'),
                           validator: (value) =>
-                              value == null ? 'Field required' : null,
+                              value == null ? 'Campo Requerido' : null,
                         );
                       }
                     }),
@@ -156,14 +156,14 @@ class SupportDashboard extends StatelessWidget {
                             : 'Fecha y hora de inicio: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedDateTime!)}',
                       ),
                       validator: (value) =>
-                          selectedDateTime == null ? 'Field required' : null,
+                          selectedDateTime == null ? 'Campo Requerido' : null,
                     ),
                     TextFormField(
                       onChanged: (value) => duration = value,
                       decoration: const InputDecoration(
                           labelText: 'Tiempo de duracion (horas)'),
                       validator: (value) =>
-                          value!.isEmpty ? 'Field required' : null,
+                          value!.isEmpty ? 'Campo Requerido' : null,
                       keyboardType: TextInputType.number,
                     ),
                   ],
@@ -190,14 +190,14 @@ class SupportDashboard extends StatelessWidget {
                       if (!isCreated) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text("Failed to create report")));
+                                content: Text("Error al crear reporte")));
                       } else {
                         reportController.getReportsBySupportUser(
                             userId); // Fetch reports only for the specific support user
                       }
                     }
                   },
-                  child: const Text('Submit'),
+                  child: const Text('Enviar'),
                 ),
               ],
             );
