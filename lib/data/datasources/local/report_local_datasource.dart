@@ -25,7 +25,6 @@ class ReportLocalDatasource implements IReportLocalDataSource {
   Future<void> cacheReports(List<Report> reports) async {
     logInfo('pre-cacheReports ${Hive.box('reportsDb').values.length}');
     await Hive.box('reportsDb').clear();
-    logInfo('pre-cacheReports ${Hive.box('reportsDb').values.length}');
     for (var report in reports) {
       await Hive.box('reportsDb').add(ReportDb(
           id: report.id,
@@ -47,7 +46,15 @@ class ReportLocalDatasource implements IReportLocalDataSource {
 
   @override
   Future<void> deleteOfflineReport(Report report) async {
-    await Hive.box('reportsDbOffline').delete(report.id);
+    await Hive.box('reportsDbOffline').delete(report);
+    logInfo("now offline has: ${Hive.box('reportsDbOffline').length}");
+  }
+
+  @override
+  Future<void> popOfflineReport() async {
+    logInfo("Removing one offline report");
+    await Hive.box('reportsDbOffline').deleteAt(0);
+    logInfo("Now offline has: ${Hive.box('reportsDbOffline').length}");
   }
 
   @override

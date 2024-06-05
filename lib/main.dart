@@ -9,9 +9,11 @@ import 'package:proyecto_clase/data/datasources/local/report_local_datasource.da
 import 'package:proyecto_clase/data/datasources/remote/i_report_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/i_client_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/i_user_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/i_coordinator_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/report_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/client_datasource.dart';
 import 'package:proyecto_clase/data/datasources/remote/user_datasource.dart';
+import 'package:proyecto_clase/data/datasources/remote/coordinator_datasource.dart';
 import 'package:proyecto_clase/data/models/report_db.dart';
 import 'package:proyecto_clase/ui/controllers/connectivity_controller.dart';
 
@@ -19,11 +21,13 @@ import 'package:proyecto_clase/ui/controllers/connectivity_controller.dart';
 import 'domain/use_case/report_usecase.dart';
 import 'domain/use_case/client_usecase.dart';
 import 'domain/use_case/user_usecase.dart';
+import 'domain/use_case/coordinator_usecase.dart';
 
 //controllers
 import 'package:proyecto_clase/ui/controllers/report_controller.dart';
 import 'package:proyecto_clase/ui/controllers/support_controller.dart';
 import 'package:proyecto_clase/ui/controllers/client_controller.dart';
+import 'package:proyecto_clase/ui/controllers/coordinator_controller.dart';
 
 //views
 import 'ui/views/login_screen.dart';
@@ -35,11 +39,13 @@ import 'ui/views/support_dashboard.dart';
 import 'data/repositories/client_repository.dart';
 import 'data/repositories/user_repository.dart';
 import 'data/repositories/report_repository.dart';
+import 'data/repositories/coordinator_repository.dart';
 
 //i_repository
 import 'package:proyecto_clase/domain/repositories/i_client_repository.dart';
 import 'package:proyecto_clase/domain/repositories/i_user_repository.dart';
 import 'package:proyecto_clase/domain/repositories/i_report_repository.dart';
+import 'package:proyecto_clase/domain/repositories/i_coordinator_repository.dart';
 
 Future<List<Box>> _openBox() async {
   List<Box> boxList = [];
@@ -76,6 +82,10 @@ void main() async {
   Get.put(ConnectivityController());
   Get.put(ReportController());
 
+  Get.put<ICoordinatorDataSource>(CoordinatorDatasource());
+  Get.put<ICoordinatorRepository>(CoordinatorRepository(Get.find()));
+  Get.put(CoordinatorUseCase(Get.find()));
+  Get.put(CoordinatorController());
   runApp(const MyApp());
 }
 
@@ -97,12 +107,17 @@ class MyApp extends StatelessWidget {
   Route<dynamic>? _getRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (context) => const LoginScreen());
+        return MaterialPageRoute(
+            builder: (context) => const LoginScreen(
+                  key: Key("LoginScreen"),
+                ));
       case '/signup':
         return MaterialPageRoute(builder: (context) => const SignupScreen());
       case '/coordinator':
         return MaterialPageRoute(
-            builder: (context) => const CoordinatorDashboard());
+            builder: (context) => const CoordinatorDashboard(
+                  key: Key("CDashboard"),
+                ));
       case '/support':
         final args = settings.arguments as Map<String, dynamic>?;
         String id = args?['supportUserId'] ?? '0';

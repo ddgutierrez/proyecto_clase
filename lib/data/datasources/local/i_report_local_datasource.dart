@@ -9,6 +9,8 @@ abstract class IReportLocalDataSource {
 
   Future<void> deleteOfflineReport(Report report);
 
+  Future<void> popOfflineReport();
+
   Future<void> cacheReports(List<Report> reports);
 
   Future<List<Report>> getOfflineReports();

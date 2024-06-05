@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Add this import
+import 'package:proyecto_clase/ui/controllers/connectivity_controller.dart';
 import '../../domain/models/report.dart';
 import '../controllers/report_controller.dart';
 import '../controllers/client_controller.dart';
@@ -76,8 +77,10 @@ class SupportDashboard extends StatelessWidget {
 
         return StatefulBuilder(
           builder: (context, setState) {
+            ConnectivityController connectivityController = Get.find();
             return AlertDialog(
-              title: const Text('Create New Report'),
+              title: Text(
+                  'Crear Nuevo Reporte${!connectivityController.connection ? '\n(Modo Offline)' : ''}'),
               content: Form(
                 key: _formKey,
                 child: Column(
@@ -88,7 +91,7 @@ class SupportDashboard extends StatelessWidget {
                       decoration: const InputDecoration(
                           labelText: 'Descripcion del informe'),
                       validator: (value) =>
-                          value!.isEmpty ? 'Field required' : null,
+                          value!.isEmpty ? 'Campo Requerido' : null,
                     ),
                     Obx(() {
                       if (clientController.clients.isEmpty) {
@@ -110,7 +113,7 @@ class SupportDashboard extends StatelessWidget {
                           decoration: const InputDecoration(
                               labelText: 'Nombre del cliente'),
                           validator: (value) =>
-                              value == null ? 'Field required' : null,
+                              value == null ? 'Campo Requerido' : null,
                         );
                       }
                     }),
@@ -147,14 +150,14 @@ class SupportDashboard extends StatelessWidget {
                             : 'Fecha y hora de inicio: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedDateTime!)}',
                       ),
                       validator: (value) =>
-                          selectedDateTime == null ? 'Field required' : null,
+                          selectedDateTime == null ? 'Campo Requerido' : null,
                     ),
                     TextFormField(
                       onChanged: (value) => duration = value,
                       decoration: const InputDecoration(
                           labelText: 'Tiempo de duracion (horas)'),
                       validator: (value) =>
-                          value!.isEmpty ? 'Field required' : null,
+                          value!.isEmpty ? 'Campo Requerido' : null,
                       keyboardType: TextInputType.number,
                     ),
                   ],
@@ -181,14 +184,14 @@ class SupportDashboard extends StatelessWidget {
                       if (!isCreated) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text("Failed to create report")));
+                                content: Text("Error al crear reporte")));
                       } else {
                         reportController.getReportsBySupportUser(
                             userId); // Fetch reports only for the specific support user
                       }
                     }
                   },
-                  child: const Text('Submit'),
+                  child: const Text('Enviar'),
                 ),
               ],
             );

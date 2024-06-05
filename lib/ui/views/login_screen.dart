@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             key: const Key('ButtonLoginRegister'),
                             onPressed: () =>
                                 Navigator.pushNamed(context, '/signup'),
-                            child: const Text('Sign Up for Support'),
+                            child: const Text('Registro Support'),
                           )
                         ])),
                   ],
@@ -152,8 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
           );
     } else {
       // Show error message if authentication fails
-      final snackBar =
-          const SnackBar(content: Text('Invalid credentials! Please try again.'));
+      final snackBar = const SnackBar(
+          content: Text('Invalid credentials! Please try again.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }

@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
+import 'package:proyecto_clase/ui/controllers/report_controller.dart';
 import '../../data/core/network_info.dart';
 
 /// Code taken from https://github.com/augustosalazar/f_web_retool_hive/blob/main/lib/ui/controller/connectivity_controller.dart
 class ConnectivityController extends GetxController with UiLoggy {
   final NetworkInfo network = Get.find();
   final _connection = false.obs;
-
   bool get connection => _connection.value;
 
   @override
