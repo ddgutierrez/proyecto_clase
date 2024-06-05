@@ -107,12 +107,17 @@ class MyApp extends StatelessWidget {
   Route<dynamic>? _getRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (context) => const LoginScreen());
+        return MaterialPageRoute(
+            builder: (context) => const LoginScreen(
+                  key: Key("LoginScreen"),
+                ));
       case '/signup':
         return MaterialPageRoute(builder: (context) => const SignupScreen());
       case '/coordinator':
         return MaterialPageRoute(
-            builder: (context) => const CoordinatorDashboard());
+            builder: (context) => const CoordinatorDashboard(
+                  key: Key("CDashboard"),
+                ));
       case '/support':
         final args = settings.arguments as Map<String, dynamic>?;
         String id = args?['supportUserId'] ?? '0';

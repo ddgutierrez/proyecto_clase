@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:proyecto_clase/data/datasources/remote/coordinator_datasource.dart';
@@ -14,7 +12,6 @@ void main() {
     mockClient = MockClient();
     coordinatorDataSource = CoordinatorDatasource(client: mockClient);
   });
-  const clientId = 999;
   const getString = """
       [
       {
