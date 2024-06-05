@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Add this import
+import 'package:proyecto_clase/ui/controllers/connectivity_controller.dart';
 import '../../domain/models/report.dart';
 import '../controllers/report_controller.dart';
 import '../controllers/client_controller.dart';
@@ -13,7 +14,7 @@ class SupportDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ReportController reportController = Get.find<ReportController>();
     final ClientController clientController = Get.find<ClientController>();
-
+    ConnectivityController connectivityController = Get.find();
     reportController.getReportsBySupportUser(int.parse(id));
     clientController.getClients(); // Ensure clients are fetched
 
@@ -54,8 +55,16 @@ class SupportDashboard extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => showAddReportDialog(
-            context, reportController, clientController, int.parse(id)),
+        onPressed: () {
+          if (!connectivityController.connection) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Modo Offline"),
+              elevation: 10,
+            ));
+          }
+          showAddReportDialog(
+              context, reportController, clientController, int.parse(id));
+        },
       ),
     );
   }
@@ -77,7 +86,7 @@ class SupportDashboard extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Create New Report'),
+              title: const Text('Crear Nuevo Reporte'),
               content: Form(
                 key: _formKey,
                 child: Column(
