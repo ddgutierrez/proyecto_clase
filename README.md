@@ -41,7 +41,7 @@
 
 <!-- About the Project -->
 ## :star2: About the Project
-This is a project for the mobile programming course, the goal is to create a flutter ap for remote staff management
+Proyecto Clase is a Flutter-based application designed to manage user authentication, support dashboards, and client reports. The project follows clean architecture principles and includes robust testing with both unit and integration tests.
 
 <!-- TechStack -->
 ### :space_invader: Tech Stack
@@ -63,10 +63,11 @@ This is a project for the mobile programming course, the goal is to create a flu
 
 <!-- Features -->
 ### :dart: Features
-
-- A login screen
-- A signup screen
-- Responsiveness
+- User Authentication: Secure login for coordinators and support users.
+- Support Dashboard: View and manage support reports, including adding, editing, and deleting reports.
+- Client Management: Add, edit, and delete clients.
+- Offline Mode: Seamless operation with offline support.
+- Integration with Hive: Efficient local data storage using Hive.
 
 <!-- Getting Started -->
 ## 	:toolbox: Getting Started
